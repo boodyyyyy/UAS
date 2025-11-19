@@ -1,0 +1,113 @@
+<div class="staff-payroll">
+  <div class="page-header">
+    <div>
+      <h1>Staff Payroll Management</h1>
+      <p class="subtitle">Manage employee salaries, allowances, and deductions</p>
+    </div>
+    <button class="btn btn-primary" (click)="showCreateForm = !showCreateForm">
+      + Run New Payroll
+    </button>
+  </div>
+  
+  <div class="stats-cards">
+    <div class="stat-card">
+      <h3>Total Payroll Cost</h3>
+      <p class="stat-value">${{ getTotalCost().toLocaleString() }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Employees Paid</h3>
+      <p class="stat-value">{{ payrolls.length }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Average Net Pay</h3>
+      <p class="stat-value">${{ getAverageNetPay().toLocaleString() }}</p>
+    </div>
+  </div>
+  
+  @if (showCreateForm) {
+    <div class="card">
+      <h2>Create Payroll</h2>
+      <form [formGroup]="payrollForm" (ngSubmit)="createPayroll()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Employee ID</label>
+            <input type="text" formControlName="employeeId" />
+          </div>
+          <div class="form-group">
+            <label>Employee Name</label>
+            <input type="text" formControlName="employeeName" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" formControlName="department" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Gross Pay</label>
+            <input type="number" formControlName="grossPay" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Allowances</label>
+            <input type="number" formControlName="allowances" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Deductions</label>
+            <input type="number" formControlName="deductions" step="0.01" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pay Period</label>
+            <input type="text" formControlName="payPeriod" placeholder="October 2024" />
+          </div>
+          <div class="form-group">
+            <label>Pay Date</label>
+            <input type="date" formControlName="payDate" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create Payroll</button>
+          <button type="button" class="btn btn-outline" (click)="showCreateForm = false">Cancel</button>
+          <button type="button" class="btn btn-secondary" (click)="generateReport()">Generate Report</button>
+        </div>
+      </form>
+    </div>
+  }
+  
+  <div class="card">
+    <h2>Payroll Records</h2>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Gross Pay</th>
+            <th>Allowances</th>
+            <th>Deductions</th>
+            <th>Net Pay</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (payroll of payrolls; track payroll.id) {
+            <tr>
+              <td>{{ payroll.employeeId }}</td>
+              <td>{{ payroll.employeeName }}</td>
+              <td>{{ payroll.department }}</td>
+              <td>${{ payroll.grossPay.toLocaleString() }}</td>
+              <td>${{ payroll.allowances.toLocaleString() }}</td>
+              <td class="text-red">(${{ payroll.deductions.toLocaleString() }})</td>
+              <td class="font-bold">${{ payroll.netPay.toLocaleString() }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center">No payroll records found</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
