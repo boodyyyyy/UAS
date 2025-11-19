@@ -1,0 +1,118 @@
+<div class="signup-container">
+  <div class="signup-card">
+    <h1>Sign Up</h1>
+    <p class="subtitle">Create your account</p>
+    
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="username">Username *</label>
+          <input type="text" id="username" formControlName="username" />
+          @if (signupForm.get('username')?.invalid && signupForm.get('username')?.touched) {
+            <div class="error-message">Username is required (min 3 characters)</div>
+          }
+        </div>
+        
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input type="text" id="name" formControlName="name" />
+          @if (signupForm.get('name')?.invalid && signupForm.get('name')?.touched) {
+            <div class="error-message">Name is required</div>
+          }
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" formControlName="email" />
+        @if (signupForm.get('email')?.invalid && signupForm.get('email')?.touched) {
+          <div class="error-message">Valid email is required</div>
+        }
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Password *</label>
+          <input type="password" id="password" formControlName="password" />
+          @if (signupForm.get('password')?.invalid && signupForm.get('password')?.touched) {
+            <div class="error-message">Password must be at least 6 characters</div>
+          }
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password *</label>
+          <input type="password" id="confirmPassword" formControlName="confirmPassword" />
+          @if (signupForm.get('confirmPassword')?.hasError('passwordMismatch')) {
+            <div class="error-message">Passwords do not match</div>
+          }
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="role">Role *</label>
+        <select id="role" formControlName="role">
+          @for (role of roles; track role) {
+            <option [value]="role">{{ role }}</option>
+          }
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="picture">Profile Picture URL (Optional)</label>
+        <input type="url" id="picture" formControlName="picture" />
+      </div>
+      
+      <div formGroupName="creditCard" class="card-section">
+        <h3>Credit Card (Optional)</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Card Number</label>
+            <input type="text" formControlName="number" placeholder="1234 5678 9012 3456" />
+          </div>
+          <div class="form-group">
+            <label>Expiry</label>
+            <input type="text" formControlName="expiry" placeholder="MM/YY" />
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="text" formControlName="cvv" placeholder="123" maxlength="3" />
+          </div>
+        </div>
+      </div>
+      
+      <div formGroupName="preferences" class="preferences-section">
+        <h3>Preferences</h3>
+        <div class="form-group">
+          <label for="theme">Theme</label>
+          <select id="theme" formControlName="theme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" formControlName="notifications" />
+            Enable Email Notifications
+          </label>
+        </div>
+      </div>
+      
+      @if (errorMessage) {
+        <div class="error-alert">{{ errorMessage }}</div>
+      }
+      
+      @if (successMessage) {
+        <div class="success-alert">{{ successMessage }}</div>
+      }
+      
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading || signupForm.invalid">
+        @if (isLoading) {
+          <span class="spinner-small"></span>
+        }
+        Sign Up
+      </button>
+    </form>
+    
+    <p class="login-link">Already have an account? <a routerLink="/login">Login</a></p>
+  </div>
+</div>

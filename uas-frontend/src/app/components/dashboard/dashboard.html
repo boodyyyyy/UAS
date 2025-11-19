@@ -1,0 +1,54 @@
+<div class="dashboard">
+  <h1>Dashboard</h1>
+  <p class="subtitle">Welcome back, {{ currentUser?.name }}!</p>
+  
+  <div class="stats-grid">
+    @if (currentUser?.role === 'student') {
+      <div class="stat-card">
+        <h3>Total Fees</h3>
+        <p class="stat-value">{{ stats.totalFees || 0 }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Pending Payments</h3>
+        <p class="stat-value">{{ stats.pendingFees || 0 }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Amount</h3>
+        <p class="stat-value">${{ (stats.totalAmount || 0).toLocaleString() }}</p>
+      </div>
+    } @else {
+      <div class="stat-card">
+        <h3>Total Invoices</h3>
+        <p class="stat-value">{{ stats.totalInvoices || 0 }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Pending Invoices</h3>
+        <p class="stat-value">{{ stats.pendingInvoices || 0 }}</p>
+      </div>
+    }
+  </div>
+  
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <a routerLink="/dashboard/student-fees" class="action-card">
+        <span class="action-icon">📄</span>
+        <span>Student Fees</span>
+      </a>
+      @if (currentUser?.role === 'admin' || currentUser?.role === 'accounting') {
+        <a routerLink="/dashboard/staff-payroll" class="action-card">
+          <span class="action-icon">👥</span>
+          <span>Staff Payroll</span>
+        </a>
+        <a routerLink="/dashboard/department-budget" class="action-card">
+          <span class="action-icon">📊</span>
+          <span>Department Budget</span>
+        </a>
+      }
+      <a routerLink="/dashboard/profile" class="action-card">
+        <span class="action-icon">👤</span>
+        <span>Profile</span>
+      </a>
+    </div>
+  </div>
+</div>

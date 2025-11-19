@@ -1,0 +1,100 @@
+<div class="student-fees">
+  <div class="page-header">
+    <div>
+      <h1>Student Fees</h1>
+      <p class="subtitle">Manage student fees and payments</p>
+    </div>
+    @if (currentUser?.role !== 'student') {
+      <button class="btn btn-primary" (click)="showCreateForm = !showCreateForm">
+        + Create Invoice
+      </button>
+    }
+  </div>
+  
+  @if (showCreateForm && currentUser?.role !== 'student') {
+    <div class="card">
+      <h2>Create New Invoice</h2>
+      <form [formGroup]="feeForm" (ngSubmit)="createFee()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Student ID</label>
+            <input type="text" formControlName="studentId" />
+          </div>
+          <div class="form-group">
+            <label>Student Name</label>
+            <input type="text" formControlName="studentName" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" formControlName="description" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" formControlName="amount" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Due Date</label>
+            <input type="date" formControlName="dueDate" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create Invoice</button>
+          <button type="button" class="btn btn-outline" (click)="showCreateForm = false">Cancel</button>
+        </div>
+      </form>
+    </div>
+  }
+  
+  <div class="card">
+    <h2>All Fees</h2>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Student Name</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (fee of fees; track fee.id) {
+            <tr>
+              <td>{{ fee.id }}</td>
+              <td>{{ fee.studentName }}</td>
+              <td>{{ fee.description }}</td>
+              <td>${{ fee.amount.toLocaleString() }}</td>
+              <td>{{ fee.dueDate | date:'shortDate' }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-success': fee.status === 'paid',
+                  'badge-warning': fee.status === 'pending',
+                  'badge-error': fee.status === 'overdue'
+                }">
+                  {{ fee.status }}
+                </span>
+              </td>
+              <td>
+                @if (fee.status === 'pending' && currentUser?.role === 'student') {
+                  <button class="btn-link" (click)="markAsPaid(fee)">Pay Now</button>
+                }
+                @if (currentUser?.role !== 'student') {
+                  <button class="btn-link" (click)="markAsPaid(fee)">Mark Paid</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center">No fees found</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
