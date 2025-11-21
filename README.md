@@ -1,1 +1,1 @@
-# UAS
+UAS (Uinveristy Accounting System)

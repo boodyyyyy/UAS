@@ -12,4 +12,8 @@ import { ChatWidget } from '../../shared/chat-widget/chat-widget';
   styleUrl: './main-layout.scss',
 })
 export class MainLayout {
+  ngOnInit() {
+    // Initialize sidebar width
+    document.documentElement.style.setProperty('--sidebar-width', '280px');
+  }
 }

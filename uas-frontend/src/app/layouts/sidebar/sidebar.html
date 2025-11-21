@@ -1,8 +1,17 @@
-<aside class="sidebar">
+<aside class="sidebar" 
+      [class.collapsed]="isCollapsed" 
+      [class.expanded-on-hover]="isHovered"
+      (mouseenter)="onMouseEnter()"
+      (mouseleave)="onMouseLeave()">
+  <button class="sidebar-toggle" (click)="toggleSidebar()" title="{{ isCollapsed ? 'Expand' : 'Collapse' }}">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
   <div class="sidebar-content">
     <div class="user-profile">
       <div class="avatar">
-        @if (currentUser?.picture) {
+        @if (currentUser.picture) {
           <img [src]="currentUser.picture" [alt]="currentUser.name" />
         } @else {
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
@@ -12,16 +21,15 @@
         }
       </div>
       <div class="user-info">
-        <div class="user-name">{{ currentUser?.name || 'User' }}</div>
-        <div class="user-role">{{ getRoleLabel(currentUser?.role) }}</div>
+        <div class="user-name">{{ currentUser.name || 'User' }}</div>
+        <div class="user-role">{{ getRoleLabel() }}</div>
       </div>
     </div>
     
     <nav class="nav-menu">
-      @for (item of filteredMenuItems; track item.route) {
+      @for (item of menuItems; track item.route) {
         <a 
           [routerLink]="item.route" 
-          routerLinkActive="active"
           class="nav-item"
           [class.active]="isActive(item.route)">
           <span class="nav-icon">

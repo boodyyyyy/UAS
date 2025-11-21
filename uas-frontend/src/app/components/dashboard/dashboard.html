@@ -1,53 +1,252 @@
 <div class="dashboard">
-  <h1>Dashboard</h1>
-  <p class="subtitle">Welcome back, {{ currentUser?.name }}!</p>
-  
-  <div class="stats-grid">
-    @if (currentUser?.role === 'student') {
-      <div class="stat-card">
-        <h3>Total Fees</h3>
-        <p class="stat-value">{{ stats.totalFees || 0 }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Pending Payments</h3>
-        <p class="stat-value">{{ stats.pendingFees || 0 }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Total Amount</h3>
-        <p class="stat-value">${{ (stats.totalAmount || 0).toLocaleString() }}</p>
-      </div>
-    } @else {
-      <div class="stat-card">
-        <h3>Total Invoices</h3>
-        <p class="stat-value">{{ stats.totalInvoices || 0 }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Pending Invoices</h3>
-        <p class="stat-value">{{ stats.pendingInvoices || 0 }}</p>
-      </div>
-    }
+  <!-- Animated Background Elements -->
+  <div class="dashboard-background">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
   </div>
-  
+
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="subtitle">Welcome back, <span class="user-name-highlight">{{ currentUser.name }}</span>!</p>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M9 2L11.09 8.26L18 9L11.09 9.74L9 16L6.91 9.74L0 9L6.91 8.26L9 2Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="icon-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M2 4H18M2 8H18M2 12H18M2 16H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards with Purple Gradients -->
+  <div class="stats-grid">
+    <div class="stat-card stat-card-primary">
+      <div class="stat-card-background"></div>
+      <div class="stat-card-content">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 4L20 12H12L16 4Z" fill="white" opacity="0.9"/>
+            <path d="M10 16H22V18H10V16Z" fill="white" opacity="0.9"/>
+            <path d="M12 20H20V22H12V20Z" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <h3>Total Fees</h3>
+          <p class="stat-value">{{ stats.totalFees || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-secondary">
+      <div class="stat-card-background"></div>
+      <div class="stat-card-content">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="12" stroke="white" stroke-width="2" fill="none" opacity="0.9"/>
+            <path d="M16 8V16L20 20" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <h3>Pending Payments</h3>
+          <p class="stat-value">{{ stats.pendingFees || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-accent">
+      <div class="stat-card-background"></div>
+      <div class="stat-card-content">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M8 12L16 4L24 12M8 20L16 28L24 20M8 16L16 8L24 16" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <h3>Total Amount</h3>
+          <p class="stat-value">${{ (stats.totalAmount || 0).toLocaleString() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-info">
+      <div class="stat-card-background"></div>
+      <div class="stat-card-content">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="4" y="6" width="24" height="20" rx="2" stroke="white" stroke-width="2" fill="none" opacity="0.9"/>
+            <path d="M4 12H28" stroke="white" stroke-width="2" opacity="0.9"/>
+            <path d="M10 18H22" stroke="white" stroke-width="2" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <h3>Total Invoices</h3>
+          <p class="stat-value">{{ stats.totalInvoices || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card-warning">
+      <div class="stat-card-background"></div>
+      <div class="stat-card-content">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 6L6 26H26L16 6Z" stroke="white" stroke-width="2" fill="none" opacity="0.9"/>
+            <path d="M16 14V18" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+            <circle cx="16" cy="22" r="1" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <h3>Pending Invoices</h3>
+          <p class="stat-value">{{ stats.pendingInvoices || 0 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section with Better Layout -->
+  <div class="charts-section">
+    <div class="section-header">
+      <div>
+        <h2>Analytics & Insights</h2>
+        <p class="section-subtitle">Visual overview of your financial data</p>
+      </div>
+    </div>
+    
+    <div class="charts-layout">
+      <!-- Left Column: Payment Progress -->
+      <div class="chart-card chart-card-compact">
+        <div class="chart-header">
+          <div>
+            <h2>Payment Progress</h2>
+            <p class="chart-subtitle">Paid vs Remaining</p>
+          </div>
+          <button class="chart-view-btn" title="View Details">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 3L11.09 7.26L16 8L11.09 8.74L9 13L6.91 8.74L2 8L6.91 7.26L9 3Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+        <div class="chart-wrapper">
+          <canvas #progressChart baseChart
+            [data]="paymentProgressChartData"
+            [options]="paymentProgressChartOptions"
+            type="doughnut">
+          </canvas>
+        </div>
+        <div class="chart-summary">
+          <div class="summary-item">
+            <span class="summary-label">Paid:</span>
+            <span class="summary-value paid">${{ (stats.paidAmount || 0).toLocaleString() }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total:</span>
+            <span class="summary-value">${{ (stats.totalAmount || 0).toLocaleString() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Fee Status Distribution -->
+      <div class="chart-card chart-card-compact">
+        <div class="chart-header">
+          <div>
+            <h2>Fee Status Distribution</h2>
+            <p class="chart-subtitle">By Status</p>
+          </div>
+          <button class="chart-view-btn" title="View Details">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 3L11.09 7.26L16 8L11.09 8.74L9 13L6.91 8.74L2 8L6.91 7.26L9 3Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+        <div class="chart-wrapper">
+          <canvas #statusChart baseChart
+            [data]="feeStatusChartData"
+            [options]="feeStatusChartOptions"
+            type="pie">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Width Revenue Trends -->
+    <div class="chart-card chart-card-full">
+      <div class="chart-header">
+        <div>
+          <h2>Revenue Trends</h2>
+          <p class="chart-subtitle">Last 12 Months</p>
+        </div>
+        <button class="chart-view-btn" title="View Full Report">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3L11.09 7.26L16 8L11.09 8.74L9 13L6.91 8.74L2 8L6.91 7.26L9 3Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+      <div class="chart-wrapper chart-wrapper-large">
+        <canvas #revenueChart baseChart
+          [data]="revenueTrendsChartData"
+          [options]="revenueTrendsChartOptions"
+          type="line">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
   <div class="quick-actions">
-    <h2>Quick Actions</h2>
+    <div class="section-header">
+      <h2>Quick Actions</h2>
+      <p class="section-subtitle">Navigate to key features</p>
+    </div>
     <div class="actions-grid">
       <a routerLink="/dashboard/student-fees" class="action-card">
-        <span class="action-icon">📄</span>
-        <span>Student Fees</span>
+        <div class="action-icon-wrapper">
+          <div class="action-icon">📄</div>
+          <div class="action-glow"></div>
+        </div>
+        <span class="action-label">Student Fees</span>
+        <svg class="action-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </a>
-      @if (currentUser?.role === 'admin' || currentUser?.role === 'accounting') {
-        <a routerLink="/dashboard/staff-payroll" class="action-card">
-          <span class="action-icon">👥</span>
-          <span>Staff Payroll</span>
-        </a>
-        <a routerLink="/dashboard/department-budget" class="action-card">
-          <span class="action-icon">📊</span>
-          <span>Department Budget</span>
-        </a>
-      }
+      <a routerLink="/dashboard/staff-payroll" class="action-card">
+        <div class="action-icon-wrapper">
+          <div class="action-icon">👥</div>
+          <div class="action-glow"></div>
+        </div>
+        <span class="action-label">Staff Payroll</span>
+        <svg class="action-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a routerLink="/dashboard/department-budget" class="action-card">
+        <div class="action-icon-wrapper">
+          <div class="action-icon">📊</div>
+          <div class="action-glow"></div>
+        </div>
+        <span class="action-label">Department Budget</span>
+        <svg class="action-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
       <a routerLink="/dashboard/profile" class="action-card">
-        <span class="action-icon">👤</span>
-        <span>Profile</span>
+        <div class="action-icon-wrapper">
+          <div class="action-icon">👤</div>
+          <div class="action-glow"></div>
+        </div>
+        <span class="action-label">Profile</span>
+        <svg class="action-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </a>
     </div>
   </div>

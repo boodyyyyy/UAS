@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -9,10 +10,24 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
-export class Header {
-  constructor(public authService: AuthService) {}
+export class Header implements OnInit, OnDestroy {
+  currentUser: any = {};
+  private userSubscription?: Subscription;
 
-  get currentUser() {
-    return this.authService.getCurrentUser();
+  constructor(private userService: UserService) {}
+
+  ngOnInit() {
+    // Initialize currentUser from service
+    this.currentUser = this.userService.getUser();
+    
+    this.userSubscription = this.userService.user$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 }

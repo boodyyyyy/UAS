@@ -1,38 +1,171 @@
 <div class="login-container">
-  <div class="login-card">
-    <h1>Login</h1>
-    <p class="subtitle">Sign in to your account</p>
-    
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" formControlName="username" placeholder="Enter your username" />
-        @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
-          <div class="error-message">Username is required</div>
-        }
+  <!-- Left Side: Organic Shape with Toggle -->
+  <div class="left-section">
+    <!-- Organic Logo-Inspired Shape -->
+    <div class="organic-shape">
+      <svg viewBox="0 0 800 1000" class="blob-svg" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(102, 126, 234, 0.5);stop-opacity:1" />
+            <stop offset="50%" style="stop-color:rgba(118, 75, 162, 0.6);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgba(96, 165, 250, 0.4);stop-opacity:1" />
+          </linearGradient>
+          <filter id="blur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="25"/>
+          </filter>
+        </defs>
+        <!-- Large logo-inspired organic shape -->
+        <path class="blob-path" d="M150,200 Q300,100 500,150 T800,250 Q750,500 600,750 T200,850 Q100,600 150,400 Q180,300 150,200 Z" fill="url(#blobGradient)" filter="url(#blur)"/>
+        <!-- Secondary shape for depth -->
+        <path class="blob-path-secondary" d="M100,300 Q250,200 450,250 T750,350 Q700,550 550,800 T150,900 Q50,650 100,450 Q130,350 100,300 Z" fill="url(#blobGradient)" filter="url(#blur)" opacity="0.6"/>
+      </svg>
+      
+      <!-- Enhanced UAS Logo Pattern Overlay -->
+      <div class="logo-pattern">
+        <!-- Large central logo shape -->
+        <div class="logo-center">
+          <svg width="200" height="200" viewBox="0 0 200 200" class="logo-svg">
+            <defs>
+              <linearGradient id="logoPatternGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:rgba(255, 255, 255, 0.3);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgba(255, 255, 255, 0.1);stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <rect width="200" height="200" rx="50" fill="url(#logoPatternGradient)" opacity="0.4"/>
+            <path d="M100 50L125 90H75L100 50Z" fill="rgba(255, 255, 255, 0.6)"/>
+            <path d="M62.5 110H137.5V120H62.5V110Z" fill="rgba(255, 255, 255, 0.6)"/>
+            <path d="M75 130H125V140H75V130Z" fill="rgba(255, 255, 255, 0.6)"/>
+          </svg>
+        </div>
+        <div class="pattern-circle circle-1"></div>
+        <div class="pattern-circle circle-2"></div>
+        <div class="pattern-circle circle-3"></div>
+        <div class="pattern-circle circle-4"></div>
+        <div class="pattern-line line-1"></div>
+        <div class="pattern-line line-2"></div>
+        <div class="pattern-line line-3"></div>
       </div>
-      
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" formControlName="password" placeholder="Enter your password" />
-        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-          <div class="error-message">Password must be at least 6 characters</div>
-        }
-      </div>
-      
-      @if (errorMessage) {
-        <div class="error-alert">{{ errorMessage }}</div>
-      }
-      
-      <button type="submit" class="btn btn-primary" [disabled]="isLoading || loginForm.invalid">
-        @if (isLoading) {
-          <span class="spinner-small"></span>
-        }
-        Login
+    </div>
+
+    <!-- Toggle Buttons -->
+    <div class="mode-toggle">
+      <button 
+        class="toggle-btn" 
+        [class.active]="isLoginMode"
+        (click)="toggleMode()"
+        type="button">
+        <span>LOGIN</span>
       </button>
-    </form>
-    
-    <p class="signup-link">Don't have an account? <a routerLink="/signup">Sign up</a></p>
-    <p class="home-link"><a routerLink="/home">← Back to Home</a></p>
+      <button 
+        class="toggle-btn" 
+        [class.active]="!isLoginMode"
+        (click)="router.navigate(['/signup'])"
+        type="button">
+        <span>SIGN UP</span>
+      </button>
+    </div>
+
+    <!-- Floating Blobs Animation -->
+    <div class="floating-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+  </div>
+
+  <!-- Right Side: Login Form -->
+  <div class="right-section">
+    <div class="form-container">
+      <div class="form-header">
+        <div class="logo-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <defs>
+              <linearGradient id="formLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#4A90E2;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <rect width="48" height="48" rx="12" fill="url(#formLogoGradient)"/>
+            <path d="M24 12L30 22H18L24 12Z" fill="white"/>
+            <path d="M15 27H33V30H15V27Z" fill="white"/>
+            <path d="M18 33H30V36H18V33Z" fill="white"/>
+          </svg>
+        </div>
+        <h1>{{ isLoginMode ? 'LOGIN' : 'SIGN UP' }}</h1>
+        <p class="subtitle">{{ isLoginMode ? 'Sign in to your account' : 'Create your account' }}</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label for="username">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 10C12.7614 10 15 7.76142 15 5C15 2.23858 12.7614 0 10 0C7.23858 0 5 2.23858 5 5C5 7.76142 7.23858 10 10 10Z" fill="currentColor"/>
+              <path d="M10 12C5.58172 12 2 13.7909 2 16V20H18V16C18 13.7909 14.4183 12 10 12Z" fill="currentColor"/>
+            </svg>
+            Username
+          </label>
+          <input 
+            type="text" 
+            id="username" 
+            formControlName="username" 
+            placeholder="Enter your username" />
+          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+            <div class="error-message">Username is required</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M5 9V7C5 4.23858 7.23858 2 10 2C12.7614 2 15 4.23858 15 7V9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <rect x="3" y="9" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Password
+          </label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            placeholder="Enter your password" />
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <div class="error-message">Password must be at least 6 characters</div>
+          }
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="rememberMe" />
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        @if (errorMessage) {
+          <div class="error-alert">{{ errorMessage }}</div>
+        }
+
+        <button type="submit" class="btn btn-primary" [disabled]="isLoading || loginForm.invalid">
+          @if (isLoading) {
+            <span class="spinner-small"></span>
+          }
+          {{ isLoginMode ? 'LOGIN' : 'SIGN UP' }}
+        </button>
+      </form>
+
+      <div class="form-footer">
+        <div class="footer-links">
+          <a routerLink="/home" class="footer-link">← Back to Home</a>
+          <span class="separator">•</span>
+          <a href="#" class="footer-link">About UAS</a>
+          <span class="separator">•</span>
+          <a href="#" class="footer-link">Join our newsletter</a>
+        </div>
+        <p class="footer-text">
+          Don't have an account? 
+          <a routerLink="/signup" class="link-accent">Sign up</a>
+        </p>
+      </div>
+    </div>
   </div>
 </div>
