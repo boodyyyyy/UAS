@@ -75,27 +75,45 @@
     }
     
     <div class="charts-section">
-      <div class="card">
+      <div class="chart-card">
+        <h2>Budget vs. Actual Spending</h2>
+        <p class="chart-subtitle">This Quarter</p>
+        <div class="chart-wrapper">
+          <canvas #budgetChart baseChart
+            [data]="budgetVsActualChartData"
+            [options]="budgetVsActualChartOptions"
+            type="bar">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
         <h2>Budget Allocation by Category</h2>
-        <div class="chart-container">
-          <div class="chart-placeholder">
-            <p>Chart visualization would be displayed here</p>
-            <p class="chart-note">Using ngx-charts or Chart.js library</p>
-            @if (budget.categories.length > 0) {
-              <div class="category-list">
-                @for (cat of budget.categories; track cat.id) {
-                  <div class="category-item">
-                    <span class="category-name">{{ cat.name }}</span>
-                    <span class="category-amount">${{ cat.spent.toLocaleString() }} / ${{ cat.allocated.toLocaleString() }}</span>
-                    <div class="progress-bar">
-                      <div class="progress-fill" [style.width.%]="cat.percentage"></div>
-                    </div>
-                  </div>
-                }
+        <div class="chart-wrapper">
+          <canvas #allocationChart baseChart
+            [data]="budgetAllocationChartData"
+            [options]="budgetAllocationChartOptions"
+            type="doughnut">
+          </canvas>
+        </div>
+        @if (budget.categories.length > 0) {
+          <div class="category-breakdown">
+            @for (cat of budget.categories; track cat.id) {
+              <div class="category-item">
+                <div class="category-info">
+                  <span class="category-name">{{ cat.name }}</span>
+                  <span class="category-percentage">{{ cat.percentage }}%</span>
+                </div>
+                <div class="category-amounts">
+                  <span>${{ cat.spent.toLocaleString() }} / ${{ cat.allocated.toLocaleString() }}</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="cat.percentage"></div>
+                </div>
               </div>
             }
           </div>
-        </div>
+        }
       </div>
     </div>
     

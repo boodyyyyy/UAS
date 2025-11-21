@@ -1,41 +1,230 @@
 <div class="home-container">
-  <div class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">University Accounting System</h1>
-      <p class="hero-subtitle">Streamline your university's financial management with our comprehensive accounting solution</p>
+  <!-- Header -->
+  <header class="home-header" [class.scrolled]="isScrolled">
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <defs>
+              <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#4A90E2;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <rect width="40" height="40" rx="10" fill="url(#logoGradient)"/>
+            <path d="M20 10L25 18H15L20 10Z" fill="white"/>
+            <path d="M12.5 22.5H27.5V25H12.5V22.5Z" fill="white"/>
+            <path d="M15 27.5H25V30H15V27.5Z" fill="white"/>
+          </svg>
+          <span class="logo-text">UAS</span>
+        </div>
+      </div>
+      <nav class="header-nav">
+        <a routerLink="/home" class="nav-link active">Home</a>
+        <a routerLink="/dashboard" class="nav-link">Dashboard</a>
+        <a routerLink="/login" class="nav-link">Login</a>
+        <a routerLink="/signup" class="btn btn-primary btn-small">Sign Up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-background">
+      <div class="hero-pattern"></div>
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+      </div>
+    </div>
+    <div class="hero-content fade-in-up">
+      <div class="hero-logo">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+          <defs>
+            <linearGradient id="heroLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+              <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.1" />
+            </linearGradient>
+          </defs>
+          <rect width="80" height="80" rx="20" fill="url(#heroLogoGradient)"/>
+          <path d="M40 20L50 36H30L40 20Z" fill="white"/>
+          <path d="M25 45H55V50H25V45Z" fill="white"/>
+          <path d="M30 55H50V60H30V55Z" fill="white"/>
+        </svg>
+      </div>
+      <h1 class="hero-title">
+        <span class="title-line">University</span>
+        <span class="title-line">Accounting System</span>
+      </h1>
+      <p class="hero-subtitle">
+        Streamline your university's financial management with our comprehensive, 
+        modern accounting solution designed for efficiency and clarity.
+      </p>
       <div class="hero-actions">
-        <a routerLink="/login" class="btn btn-primary">Login</a>
-        <a routerLink="/signup" class="btn btn-outline">Sign Up</a>
-        <a routerLink="/dashboard/profile" class="btn btn-secondary">View Profile</a>
+        <a routerLink="/login" class="btn btn-hero btn-primary">
+          <span>Get Started</span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a routerLink="/signup" class="btn btn-hero btn-outline-white">
+          <span>Sign Up</span>
+        </a>
+        <a routerLink="/dashboard" class="btn btn-hero btn-ghost">
+          <span>View Dashboard</span>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Secure</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Available</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Users</div>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <div class="features-section">
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
     <div class="container">
-      <h2 class="section-title">Features</h2>
+      <div class="section-header fade-in">
+        <h2 class="section-title">Powerful Features</h2>
+        <p class="section-subtitle">Everything you need to manage your university's finances efficiently</p>
+      </div>
       <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">💰</div>
+        <div class="feature-card" [class.animate]="animatedFeatures" [style.animation-delay.ms]="0">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">💰</div>
+            <div class="icon-glow"></div>
+          </div>
           <h3>Student Fees Management</h3>
-          <p>Manage student invoices, track payments, and view payment history all in one place.</p>
+          <p>Manage student invoices, track payments, and view comprehensive payment history all in one intuitive dashboard.</p>
+          <div class="feature-link">
+            <a routerLink="/dashboard/student-fees">Learn more →</a>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">👥</div>
+        <div class="feature-card" [class.animate]="animatedFeatures" [style.animation-delay.ms]="100">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">👥</div>
+            <div class="icon-glow"></div>
+          </div>
           <h3>Staff Payroll</h3>
-          <p>Handle employee salaries, allowances, and deductions with automated payroll reports.</p>
+          <p>Handle employee salaries, allowances, and deductions with automated payroll reports and real-time calculations.</p>
+          <div class="feature-link">
+            <a routerLink="/dashboard/staff-payroll">Learn more →</a>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
+        <div class="feature-card" [class.animate]="animatedFeatures" [style.animation-delay.ms]="200">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">📊</div>
+            <div class="icon-glow"></div>
+          </div>
           <h3>Department Budget</h3>
-          <p>Track departmental income and expenses with interactive charts and visualizations.</p>
+          <p>Track departmental income and expenses with interactive charts, visualizations, and detailed analytics.</p>
+          <div class="feature-link">
+            <a routerLink="/dashboard/department-budget">Learn more →</a>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔐</div>
+        <div class="feature-card" [class.animate]="animatedFeatures" [style.animation-delay.ms]="300">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">🔐</div>
+            <div class="icon-glow"></div>
+          </div>
           <h3>Secure & Reliable</h3>
-          <p>Your data is protected with industry-standard security measures and regular backups.</p>
+          <p>Your data is protected with industry-standard security measures, encryption, and regular automated backups.</p>
+          <div class="feature-link">
+            <a routerLink="/dashboard/profile">Learn more →</a>
+          </div>
+        </div>
+        <div class="feature-card" [class.animate]="animatedFeatures" [style.animation-delay.ms]="400">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">📈</div>
+            <div class="icon-glow"></div>
+          </div>
+          <h3>Real-time Analytics</h3>
+          <p>Get instant insights with beautiful charts and graphs that help you make informed financial decisions.</p>
+          <div class="feature-link">
+            <a routerLink="/dashboard">Learn more →</a>
+          </div>
+        </div>
+        <div class="feature-card" [class.animate]="animatedFeatures" [style.animation-delay.ms]="500">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">⚡</div>
+            <div class="icon-glow"></div>
+          </div>
+          <h3>Fast & Efficient</h3>
+          <p>Lightning-fast performance with optimized workflows that save you time and increase productivity.</p>
+          <div class="feature-link">
+            <a routerLink="/dashboard">Learn more →</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="home-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <div class="footer-logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <defs>
+              <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#4A90E2;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="8" fill="url(#footerLogoGradient)"/>
+            <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+            <path d="M10 18H22V20H10V18Z" fill="white"/>
+            <path d="M12 22H20V24H12V22Z" fill="white"/>
+          </svg>
+          <span>UAS</span>
+        </div>
+        <p class="footer-description">
+          The comprehensive accounting solution for modern universities.
+        </p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a routerLink="/home">Home</a></li>
+          <li><a routerLink="/dashboard">Dashboard</a></li>
+          <li><a routerLink="/login">Login</a></li>
+          <li><a routerLink="/signup">Sign Up</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Features</h4>
+        <ul>
+          <li><a routerLink="/dashboard/student-fees">Student Fees</a></li>
+          <li><a routerLink="/dashboard/staff-payroll">Payroll</a></li>
+          <li><a routerLink="/dashboard/department-budget">Budget</a></li>
+          <li><a routerLink="/dashboard/profile">Profile</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <ul>
+          <li>Email: support@uas.edu</li>
+          <li>Phone: (123) 456-7890</li>
+          <li>Address: University Campus</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 University Accounting System. All rights reserved.</p>
+    </div>
+  </footer>
 </div>

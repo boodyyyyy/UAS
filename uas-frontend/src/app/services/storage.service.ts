@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
-  constructor(private cookieService: CookieService) {}
+  constructor() {}
 
   // LocalStorage - for persistent data that should survive browser restarts
   setLocalStorage(key: string, value: any): void {
@@ -41,23 +40,6 @@ export class StorageService {
 
   clearSessionStorage(): void {
     sessionStorage.clear();
-  }
-
-  // Cookies - for data that should be sent to server or persist across sessions
-  setCookie(key: string, value: string, days: number = 7): void {
-    this.cookieService.set(key, value, days);
-  }
-
-  getCookie(key: string): string {
-    return this.cookieService.get(key);
-  }
-
-  removeCookie(key: string): void {
-    this.cookieService.delete(key);
-  }
-
-  clearCookies(): void {
-    this.cookieService.deleteAll();
   }
 }
 
