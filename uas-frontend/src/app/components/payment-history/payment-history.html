@@ -1,0 +1,36 @@
+<div class="payment-history">
+  <div class="page-header">
+    <h1>Payment History</h1>
+    <p class="subtitle">View your payment history</p>
+  </div>
+
+  <div class="card">
+    @if (payments.length === 0) {
+      <div class="empty-state">
+        <p>No payment history found.</p>
+      </div>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (payment of payments; track payment.id) {
+            <tr>
+              <td>{{ payment.description }}</td>
+              <td>${{ payment.amount.toLocaleString() }}</td>
+              <td>{{ payment.date | date:'short' }}</td>
+              <td><span class="status-badge paid">Paid</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+

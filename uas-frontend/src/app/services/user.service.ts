@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { UserRole } from '../models/user.model';
 
 export interface User {
   id: string;
@@ -7,7 +8,7 @@ export interface User {
   name: string;
   email: string;
   picture: string;
-  role: string;
+  role: UserRole;
   creditCard?: {
     number: string;
     expiry: string;
@@ -37,11 +38,42 @@ export class UserService {
         name: 'Demo User',
         email: 'demo@university.edu',
         picture: '',
-        role: 'student',
+        role: UserRole.STUDENT,
         creditCard: { number: '', expiry: '', cvv: '' },
         preferences: { theme: 'light', notifications: true, language: 'en' }
       });
     }
+  }
+
+  // Role-based helper methods
+  isStudent(): boolean {
+    return this.getUser()?.role === UserRole.STUDENT;
+  }
+
+  isAccounting(): boolean {
+    return this.getUser()?.role === UserRole.ACCOUNTING;
+  }
+
+  isAdmin(): boolean {
+    return this.getUser()?.role === UserRole.ADMIN;
+  }
+
+  hasRole(role: UserRole): boolean {
+    return this.getUser()?.role === role;
+  }
+
+  canAccess(requiredRole: UserRole | UserRole[]): boolean {
+    const userRole = this.getUser()?.role;
+    if (!userRole) return false;
+    
+    if (Array.isArray(requiredRole)) {
+      return requiredRole.includes(userRole);
+    }
+    
+    // Admin can access everything
+    if (userRole === UserRole.ADMIN) return true;
+    
+    return userRole === requiredRole;
   }
 
   getUser(): User {
@@ -63,7 +95,12 @@ export class UserService {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const user = JSON.parse(stored);
+        // Ensure role is a valid UserRole enum value
+        if (!user.role || !Object.values(UserRole).includes(user.role)) {
+          user.role = UserRole.STUDENT;
+        }
+        return user;
       }
     } catch (error) {
       console.error('Error loading user from storage:', error);
@@ -74,7 +111,7 @@ export class UserService {
       name: 'Demo User',
       email: 'demo@university.edu',
       picture: '',
-      role: 'student',
+      role: UserRole.STUDENT,
       creditCard: { number: '', expiry: '', cvv: '' },
       preferences: { theme: 'light', notifications: true, language: 'en' }
     };

@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DataService } from '../../services/data.service';
+import { UserService } from '../../services/user.service';
+import { UserRole } from '../../models/user.model';
 import { StudentFee } from '../../models/student-fee.model';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -19,8 +21,19 @@ export class StudentFees implements OnInit {
   @ViewChild('trendsChart') paymentTrendsChart?: BaseChartDirective;
   
   fees: StudentFee[] = [];
+  allFees: StudentFee[] = [];
   showCreateForm = false;
   feeForm: FormGroup;
+  currentUser: any = {};
+  userRole: UserRole = UserRole.STUDENT;
+  
+  get isStudent(): boolean {
+    return this.userRole === UserRole.STUDENT;
+  }
+  
+  get canCreateInvoice(): boolean {
+    return this.userRole === UserRole.ACCOUNTING || this.userRole === UserRole.ADMIN;
+  }
 
   // Payment Status Chart (Pie)
   public paymentStatusChartData: ChartConfiguration<'pie'>['data'] = {
@@ -111,6 +124,7 @@ export class StudentFees implements OnInit {
 
   constructor(
     private dataService: DataService,
+    private userService: UserService,
     private fb: FormBuilder
   ) {
     this.feeForm = this.fb.group({
@@ -123,6 +137,8 @@ export class StudentFees implements OnInit {
   }
 
   ngOnInit() {
+    this.currentUser = this.userService.getUser();
+    this.userRole = this.currentUser?.role || UserRole.STUDENT;
     this.loadFees();
   }
 
@@ -153,15 +169,28 @@ export class StudentFees implements OnInit {
         forkJoin(updateObservables).pipe(
           switchMap(() => this.dataService.getStudentFees())
         ).subscribe(updatedFees => {
-          this.fees = updatedFees;
-          this.updateCharts();
+          this.allFees = updatedFees;
+          this.filterFeesByRole();
         });
       } else {
-        // No updates needed, just set fees and update charts
-        this.fees = fees;
-        this.updateCharts();
+        // No updates needed, just set fees and filter by role
+        this.allFees = fees;
+        this.filterFeesByRole();
       }
     });
+  }
+
+  filterFeesByRole() {
+    if (this.isStudent) {
+      // Students only see their own fees
+      this.fees = this.allFees.filter(f => 
+        f.studentId === this.currentUser.id || f.studentName === this.currentUser.name
+      );
+    } else {
+      // Accounting and Admin see all fees
+      this.fees = this.allFees;
+    }
+    this.updateCharts();
   }
 
   updateCharts() {
