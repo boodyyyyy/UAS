@@ -36,7 +36,7 @@ export class UserManagement implements OnInit {
   loadUsers() {
     // In a real app, this would fetch from a backend
     // For now, we'll use localStorage to store users
-    const stored = localStorage.getItem('uas_all_users');
+    const stored = localStorage.getItem('users');
     if (stored) {
       this.users = JSON.parse(stored);
     } else {
@@ -48,7 +48,7 @@ export class UserManagement implements OnInit {
   }
 
   saveUsers() {
-    localStorage.setItem('uas_all_users', JSON.stringify(this.users));
+    localStorage.setItem('users', JSON.stringify(this.users));
   }
 
   createUser() {

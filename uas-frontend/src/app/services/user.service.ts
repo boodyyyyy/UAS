@@ -30,18 +30,13 @@ export class UserService {
   public user$: Observable<User> = this.userSubject.asObservable();
 
   constructor() {
-    // Initialize with default user if none exists
-    if (!this.getUser()) {
-      this.setUser({
-        id: '1',
-        username: 'demouser',
-        name: 'Demo User',
-        email: 'demo@university.edu',
-        picture: '',
-        role: UserRole.STUDENT,
-        creditCard: { number: '', expiry: '', cvv: '' },
-        preferences: { theme: 'light', notifications: true, language: 'en' }
-      });
+    const sessionUserId = sessionStorage.getItem('currentUserId');
+    if (sessionUserId) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: any) => u.id === sessionUserId);
+      if (user) {
+        this.userSubject.next(user);
+      }
     }
   }
 
@@ -82,7 +77,9 @@ export class UserService {
 
   setUser(user: User): void {
     this.userSubject.next(user);
+    //→ updates RAM + triggers UI updates
     this.saveUserToStorage(user);
+    //→ saves profile in localStorage so refresh won't break the UI
   }
 
   updateUser(updates: Partial<User>): void {
@@ -92,29 +89,9 @@ export class UserService {
   }
 
   private loadUserFromStorage(): User {
-    try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        const user = JSON.parse(stored);
-        // Ensure role is a valid UserRole enum value
-        if (!user.role || !Object.values(UserRole).includes(user.role)) {
-          user.role = UserRole.STUDENT;
-        }
-        return user;
-      }
-    } catch (error) {
-      console.error('Error loading user from storage:', error);
-    }
-    return {
-      id: '1',
-      username: 'demouser',
-      name: 'Demo User',
-      email: 'demo@university.edu',
-      picture: '',
-      role: UserRole.STUDENT,
-      creditCard: { number: '', expiry: '', cvv: '' },
-      preferences: { theme: 'light', notifications: true, language: 'en' }
-    };
+      if (stored) return JSON.parse(stored);
+      return null as any;
   }
 
   private saveUserToStorage(user: User): void {

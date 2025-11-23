@@ -149,7 +149,9 @@ export class Dashboard implements OnInit, OnDestroy {
   ngOnInit() {
     // Initialize currentUser from service
     this.currentUser = this.userService.getUser();
-    this.userRole = this.currentUser?.role || UserRole.STUDENT;
+    if (!this.currentUser?.role) return;
+    
+    this.userRole = this.currentUser?.role;
     
     this.loadStats();
     this.userSubscription = this.userService.user$.subscribe(user => {
