@@ -41,6 +41,26 @@ export const routes: Routes = [
       {
         path: 'student-fees',
         loadComponent: () => import('./components/student-fees/student-fees').then(m => m.StudentFees)
+      },
+      {
+        path: 'payment-history',
+        loadComponent: () => import('./components/payment-history/payment-history').then(m => m.PaymentHistory)
+      },
+      {
+        path: 'payments',
+        loadComponent: () => import('./components/payments/payments').then(m => m.Payments)
+      },
+      {
+        path: 'reports',
+        loadComponent: () => import('./components/reports/reports').then(m => m.Reports)
+      },
+      {
+        path: 'user-management',
+        loadComponent: () => import('./components/user-management/user-management').then(m => m.UserManagement)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./components/settings/settings').then(m => m.Settings)
       }
     ]
   }

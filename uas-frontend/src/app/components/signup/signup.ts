@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { UserService } from '../../services/user.service';
+import { UserRole } from '../../models/user.model';
 
 @Component({
   selector: 'app-signup',
@@ -14,11 +16,12 @@ export class Signup {
   errorMessage = '';
   successMessage = '';
   isLoading = false;
-  roles = ['admin', 'accounting', 'student'];
+  roles = [UserRole.STUDENT, UserRole.ACCOUNTING, UserRole.ADMIN];
 
   constructor(
     private fb: FormBuilder,
-    public router: Router
+    public router: Router,
+    private userService: UserService
   ) {
     this.signupForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
@@ -26,7 +29,7 @@ export class Signup {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
-      role: ['student', [Validators.required]],
+      role: [UserRole.STUDENT, [Validators.required]],
       picture: [''],
       creditCard: this.fb.group({
         number: [''],
@@ -56,11 +59,28 @@ export class Signup {
 
   onSubmit() {
     if (this.signupForm.valid) {
-      // Frontend-only: just show success and redirect
-      this.successMessage = 'Account created successfully! Redirecting to login...';
+      const formValue = this.signupForm.value;
+      
+      // Create user object
+      const newUser = {
+        id: Date.now().toString(),
+        username: formValue.username,
+        name: formValue.name,
+        email: formValue.email,
+        picture: formValue.picture || '',
+        role: formValue.role as UserRole,
+        creditCard: formValue.creditCard || { number: '', expiry: '', cvv: '' },
+        preferences: formValue.preferences || { theme: 'light', notifications: true, language: 'en' }
+      };
+      
+      // Save user to UserService
+      this.userService.setUser(newUser);
+      
+      // Show success and redirect to dashboard
+      this.successMessage = 'Account created successfully! Redirecting to dashboard...';
       setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 2000);
+        this.router.navigate(['/dashboard']);
+      }, 1500);
     }
   }
 }

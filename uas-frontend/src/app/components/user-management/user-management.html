@@ -1,0 +1,93 @@
+<div class="user-management">
+  <div class="page-header">
+    <div>
+      <h1>User Management</h1>
+      <p class="subtitle">Manage system users and their roles</p>
+    </div>
+    <button class="btn btn-primary" (click)="showCreateForm = !showCreateForm">
+      + Add User
+    </button>
+  </div>
+
+  @if (showCreateForm) {
+    <div class="card">
+      <h2>Create New User</h2>
+      <form [formGroup]="userForm" (ngSubmit)="createUser()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" formControlName="username" />
+          </div>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" formControlName="name" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" formControlName="email" />
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select formControlName="role">
+              @for (role of roles; track role) {
+                <option [value]="role">{{ role | titlecase }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create User</button>
+          <button type="button" class="btn btn-outline" (click)="showCreateForm = false">Cancel</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="card">
+    <h2>All Users</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users; track user.id) {
+            <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td><span class="role-badge" [attr.data-role]="user.role">{{ user.role | titlecase }}</span></td>
+              <td>
+                <span class="status-badge" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+                  {{ user.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-icon" (click)="toggleUserStatus(user)" [title]="user.isActive ? 'Deactivate' : 'Activate'">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2L10.09 6.26L15 7L10.09 7.74L8 12L5.91 7.74L1 7L5.91 6.26L8 2Z" fill="currentColor"/>
+                  </svg>
+                </button>
+                <button class="btn-icon btn-danger" (click)="deleteUser(user.id)" title="Delete">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

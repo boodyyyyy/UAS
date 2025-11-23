@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { UserService } from '../../services/user.service';
+import { UserRole } from '../../models/user.model';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { Subscription } from 'rxjs';
@@ -19,7 +20,21 @@ export class Dashboard implements OnInit, OnDestroy {
   @ViewChild('statusChart') feeStatusChart?: BaseChartDirective;
   currentUser: any = {};
   stats: any = {};
+  userRole: UserRole = UserRole.STUDENT;
   private userSubscription?: Subscription;
+  
+  // Role getters for template
+  get isStudent(): boolean {
+    return this.userRole === UserRole.STUDENT;
+  }
+  
+  get isAccounting(): boolean {
+    return this.userRole === UserRole.ACCOUNTING;
+  }
+  
+  get isAdmin(): boolean {
+    return this.userRole === UserRole.ADMIN;
+  }
 
   // Payment Progress Chart (Doughnut)
   public paymentProgressChartData: ChartConfiguration<'doughnut'>['data'] = {
@@ -134,10 +149,14 @@ export class Dashboard implements OnInit, OnDestroy {
   ngOnInit() {
     // Initialize currentUser from service
     this.currentUser = this.userService.getUser();
+    this.userRole = this.currentUser?.role || UserRole.STUDENT;
     
     this.loadStats();
     this.userSubscription = this.userService.user$.subscribe(user => {
       this.currentUser = user;
+      this.userRole = user?.role || UserRole.STUDENT;
+      // Reload stats when user changes (for role-based filtering)
+      this.loadStats();
     });
   }
 
@@ -148,12 +167,20 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   loadStats() {
-    // Load all stats for display
+    // Load stats based on user role
     this.dataService.getStudentFees().subscribe(fees => {
-      this.stats.totalFees = fees.length;
-      this.stats.pendingFees = fees.filter(f => f.status === 'pending').length;
-      this.stats.totalAmount = fees.reduce((sum, f) => sum + f.amount, 0);
-      this.stats.paidAmount = fees.filter(f => f.status === 'paid').reduce((sum, f) => sum + f.amount, 0);
+      // Filter fees based on role
+      let filteredFees = fees;
+      if (this.isStudent) {
+        // Students only see their own fees
+        filteredFees = fees.filter(f => f.studentId === this.currentUser.id || f.studentName === this.currentUser.name);
+      }
+      
+      this.stats.totalFees = filteredFees.length;
+      this.stats.pendingFees = filteredFees.filter(f => f.status === 'pending').length;
+      this.stats.overdueFees = filteredFees.filter(f => f.status === 'overdue').length;
+      this.stats.totalAmount = filteredFees.reduce((sum, f) => sum + f.amount, 0);
+      this.stats.paidAmount = filteredFees.filter(f => f.status === 'paid').reduce((sum, f) => sum + f.amount, 0);
       
       // Update payment progress chart with new reference
       const remaining = this.stats.totalAmount - this.stats.paidAmount;
@@ -169,9 +196,9 @@ export class Dashboard implements OnInit, OnDestroy {
       };
 
       // Update fee status chart with new reference
-      const paidCount = fees.filter(f => f.status === 'paid').length;
-      const pendingCount = fees.filter(f => f.status === 'pending').length;
-      const overdueCount = fees.filter(f => f.status === 'overdue').length;
+      const paidCount = filteredFees.filter(f => f.status === 'paid').length;
+      const pendingCount = filteredFees.filter(f => f.status === 'pending').length;
+      const overdueCount = filteredFees.filter(f => f.status === 'overdue').length;
       this.feeStatusChartData = {
         ...this.feeStatusChartData,
         datasets: [{
@@ -188,9 +215,31 @@ export class Dashboard implements OnInit, OnDestroy {
     });
     
     this.dataService.getInvoices().subscribe(invoices => {
-      this.stats.totalInvoices = invoices.length;
-      this.stats.pendingInvoices = invoices.filter(i => i.status === 'pending').length;
+      // Accounting and Admin see all invoices, students see none
+      if (this.isAccounting || this.isAdmin) {
+        this.stats.totalInvoices = invoices.length;
+        this.stats.pendingInvoices = invoices.filter(i => i.status === 'pending').length;
+        this.stats.overdueInvoices = invoices.filter(i => i.status === 'overdue').length;
+      } else {
+        this.stats.totalInvoices = 0;
+        this.stats.pendingInvoices = 0;
+        this.stats.overdueInvoices = 0;
+      }
     });
+    
+    // Load additional stats for Accounting and Admin
+    if (this.isAccounting || this.isAdmin) {
+      this.dataService.getBudget().subscribe(budget => {
+        this.stats.totalBudget = budget?.totalBudget || 0;
+        this.stats.totalSpent = budget?.transactions?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+      });
+    }
+    
+    // Load additional stats for Admin
+    if (this.isAdmin) {
+      // Admin-specific stats can be added here
+      this.stats.totalUsers = 0; // Placeholder
+    }
 
     // Generate sample revenue trends data
     this.generateRevenueTrends();

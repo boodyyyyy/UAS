@@ -1,0 +1,52 @@
+<div class="reports">
+  <div class="page-header">
+    <div>
+      <h1>Financial Reports</h1>
+      <p class="subtitle">View and export financial reports</p>
+    </div>
+    <button class="btn btn-primary" (click)="exportReport()">Export Report</button>
+  </div>
+
+  <div class="reports-grid">
+    <div class="report-card">
+      <h3>Revenue Summary</h3>
+      <div class="report-item">
+        <span class="label">Total Revenue:</span>
+        <span class="value">${{ (reports.totalRevenue || 0).toLocaleString() }}</span>
+      </div>
+      <div class="report-item">
+        <span class="label">Pending Revenue:</span>
+        <span class="value">${{ (reports.pendingRevenue || 0).toLocaleString() }}</span>
+      </div>
+      <div class="report-item">
+        <span class="label">Overdue Revenue:</span>
+        <span class="value">${{ (reports.overdueRevenue || 0).toLocaleString() }}</span>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <h3>Budget Summary</h3>
+      <div class="report-item">
+        <span class="label">Total Budget:</span>
+        <span class="value">${{ (reports.totalBudget || 0).toLocaleString() }}</span>
+      </div>
+      <div class="report-item">
+        <span class="label">Total Spent:</span>
+        <span class="value">${{ (reports.totalSpent || 0).toLocaleString() }}</span>
+      </div>
+      <div class="report-item">
+        <span class="label">Remaining:</span>
+        <span class="value">${{ (reports.remainingBudget || 0).toLocaleString() }}</span>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <h3>Fees Summary</h3>
+      <div class="report-item">
+        <span class="label">Total Fees:</span>
+        <span class="value">{{ reports.totalFees || 0 }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+

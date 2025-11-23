@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { UserService } from '../../services/user.service';
+import { UserRole } from '../../models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +19,8 @@ export class Login {
 
   constructor(
     private fb: FormBuilder,
-    public router: Router
+    public router: Router,
+    private userService: UserService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -44,7 +47,30 @@ export class Login {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      // Frontend-only: just navigate to dashboard without authentication
+      const username = this.loginForm.value.username.toLowerCase();
+      const password = this.loginForm.value.password;
+      
+      // Determine role based on username (for demo purposes)
+      let role: UserRole = UserRole.STUDENT;
+      if (username.includes('admin')) {
+        role = UserRole.ADMIN;
+      } else if (username.includes('accounting') || username.includes('finance')) {
+        role = UserRole.ACCOUNTING;
+      }
+      
+      // Set user in UserService
+      this.userService.setUser({
+        id: Date.now().toString(),
+        username: this.loginForm.value.username,
+        name: this.loginForm.value.username.charAt(0).toUpperCase() + this.loginForm.value.username.slice(1),
+        email: `${this.loginForm.value.username}@university.edu`,
+        picture: '',
+        role: role,
+        creditCard: { number: '', expiry: '', cvv: '' },
+        preferences: { theme: 'light', notifications: true, language: 'en' }
+      });
+      
+      // Navigate to dashboard
       this.router.navigate(['/dashboard']);
     }
   }

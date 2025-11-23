@@ -2,12 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
+import { UserRole } from '../../models/user.model';
 import { Subscription } from 'rxjs';
 
 interface MenuItem {
   label: string;
   route: string;
   icon: string;
+  roles?: UserRole[]; // If undefined, accessible to all roles
 }
 
 @Component({
@@ -20,13 +22,27 @@ export class Sidebar implements OnInit, OnDestroy {
   isCollapsed = false;
   isHovered = false;
   currentUser: any = {};
+  menuItems: MenuItem[] = [];
   private userSubscription?: Subscription;
 
-  menuItems: MenuItem[] = [
-    { label: 'Dashboard', route: '/dashboard', icon: 'grid' },
-    { label: 'Student Fees', route: '/dashboard/student-fees', icon: 'document' },
-    { label: 'Staff Payroll', route: '/dashboard/staff-payroll', icon: 'payroll' },
-    { label: 'Department Budget', route: '/dashboard/department-budget', icon: 'budget' },
+  // All possible menu items
+  private allMenuItems: MenuItem[] = [
+    // Student menu items
+    { label: 'Dashboard', route: '/dashboard', icon: 'grid', roles: [UserRole.STUDENT, UserRole.ACCOUNTING, UserRole.ADMIN] },
+    { label: 'My Fees', route: '/dashboard/student-fees', icon: 'document', roles: [UserRole.STUDENT] },
+    { label: 'Payment History', route: '/dashboard/payment-history', icon: 'history', roles: [UserRole.STUDENT] },
+    
+    // Accounting menu items
+    { label: 'Invoices', route: '/dashboard/student-fees', icon: 'document', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
+    { label: 'Payments', route: '/dashboard/payments', icon: 'payment', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
+    { label: 'Department Budget', route: '/dashboard/department-budget', icon: 'budget', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
+    { label: 'Reports', route: '/dashboard/reports', icon: 'chart', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
+    
+    // Admin menu items
+    { label: 'User Management', route: '/dashboard/user-management', icon: 'users', roles: [UserRole.ADMIN] },
+    { label: 'System Settings', route: '/dashboard/settings', icon: 'settings', roles: [UserRole.ADMIN] },
+    
+    // Shared menu items
     { label: 'Profile', route: '/dashboard/profile', icon: 'user' }
   ];
 
@@ -38,9 +54,29 @@ export class Sidebar implements OnInit, OnDestroy {
   ngOnInit() {
     // Initialize currentUser from service
     this.currentUser = this.userService.getUser();
+    this.updateMenuItems();
     
     this.userSubscription = this.userService.user$.subscribe(user => {
       this.currentUser = user;
+      this.updateMenuItems();
+    });
+  }
+
+  updateMenuItems() {
+    const userRole = this.currentUser?.role;
+    if (!userRole) {
+      this.menuItems = [];
+      return;
+    }
+
+    // Filter menu items based on user role
+    this.menuItems = this.allMenuItems.filter(item => {
+      // If no roles specified, item is accessible to all
+      if (!item.roles) return true;
+      // Admin can access everything
+      if (userRole === UserRole.ADMIN) return true;
+      // Check if user role is in the allowed roles
+      return item.roles.includes(userRole);
     });
   }
 
