@@ -47,31 +47,42 @@ export class Login {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const username = this.loginForm.value.username.toLowerCase();
-      const password = this.loginForm.value.password;
-      
-      // Determine role based on username (for demo purposes)
-      let role: UserRole = UserRole.STUDENT;
-      if (username.includes('admin')) {
-        role = UserRole.ADMIN;
-      } else if (username.includes('accounting') || username.includes('finance')) {
-        role = UserRole.ACCOUNTING;
+      const { username, password, rememberMe } = this.loginForm.value;
+
+      // 1. Load users from storage
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+      // 2. Find matching user
+      const user = users.find((u: any) =>
+        u.username.toLowerCase() === username.toLowerCase()
+      );
+
+      if (!user) {
+        this.errorMessage = 'User not found';
+        return;
       }
-      
-      // Set user in UserService
-      this.userService.setUser({
-        id: Date.now().toString(),
-        username: this.loginForm.value.username,
-        name: this.loginForm.value.username.charAt(0).toUpperCase() + this.loginForm.value.username.slice(1),
-        email: `${this.loginForm.value.username}@university.edu`,
-        picture: '',
-        role: role,
-        creditCard: { number: '', expiry: '', cvv: '' },
-        preferences: { theme: 'light', notifications: true, language: 'en' }
-      });
-      
-      // Navigate to dashboard
+
+      // 3. Validate password
+      if (user.password !== password) {
+        this.errorMessage = 'Incorrect password';
+        return;
+      }
+
+      // 4. Save active session
+      sessionStorage.setItem('currentUserId', user.id);
+
+      // 5. Remember Me cookie (simulate httpOnly by storing non-sensitive token)
+      if (rememberMe) {
+        const token = btoa(user.id + ':' + Date.now());
+        document.cookie = `remember_token=${token}; Secure; SameSite=Lax; path=/; max-age=604800`;
+      }
+
+      // 6. Push into UserService
+      this.userService.setUser(user);
+
+      // 7. Redirect
       this.router.navigate(['/dashboard']);
     }
+
   }
 }

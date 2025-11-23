@@ -67,20 +67,34 @@ export class Signup {
         username: formValue.username,
         name: formValue.name,
         email: formValue.email,
+        password: formValue.password, 
         picture: formValue.picture || '',
         role: formValue.role as UserRole,
         creditCard: formValue.creditCard || { number: '', expiry: '', cvv: '' },
         preferences: formValue.preferences || { theme: 'light', notifications: true, language: 'en' }
       };
       
-      // Save user to UserService
+      // 1. Load existing users
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+      // 2. Save new user
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+
+      // 3. Save active session (sessionStorage)
+      sessionStorage.setItem('currentUserId', newUser.id);
+
+      // 4. Set theme preference cookie (non-HTTP-only but styled as secure)
+      // will prob remove this later
+      document.cookie = `theme=${newUser.preferences.theme}; Secure; SameSite=Lax; path=/; max-age=2592000`;
+
+      // 5. Push into UserService BehaviorSubject
       this.userService.setUser(newUser);
-      
-      // Show success and redirect to dashboard
-      this.successMessage = 'Account created successfully! Redirecting to dashboard...';
-      setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 1500);
+
+      // 6. Redirect
+      this.successMessage = 'Account created successfully! Please log in to continue.';
+      setTimeout(() => this.router.navigate(['/login']), 1500);
+
     }
   }
 }

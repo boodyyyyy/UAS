@@ -79,13 +79,15 @@
   </div>
   
   <div class="card">
-    <h2>All Fees</h2>
+  <h2>@if (isStudent) { My Fees } @else { All Fees }</h2>
     <div class="table-container">
       <table class="table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Student Name</th>
+            @if (!isStudent) {
+              <th>ID</th>
+              <th>Student Name</th>
+            }
             <th>Description</th>
             <th>Amount</th>
             <th>Due Date</th>
@@ -96,8 +98,10 @@
         <tbody>
           @for (fee of fees; track fee.id) {
             <tr>
-              <td>{{ fee.id }}</td>
-              <td>{{ fee.studentName }}</td>
+              @if (!isStudent) {
+                <td>{{ fee.id }}</td>
+                <td>{{ fee.studentName }}</td>
+              }
               <td>{{ fee.description }}</td>
               <td>${{ fee.amount.toLocaleString() }}</td>
               <td>{{ fee.dueDate | date:'shortDate' }}</td>

@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
-
+import { AuthGuard } from '../app/guards/auth.guard'
+import { RoleGuard } from '../app/guards/role.gaurd'
+import { UserRole } from '../app/models/user.model'
 export const routes: Routes = [
   {
     path: '',
@@ -20,6 +22,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
+    canActivate: [AuthGuard],
     loadComponent: () => import('./layouts/main-layout/main-layout').then(m => m.MainLayout),
     children: [
       {
@@ -32,10 +35,14 @@ export const routes: Routes = [
       },
       {
         path: 'staff-payroll',
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
         loadComponent: () => import('./components/staff-payroll/staff-payroll').then(m => m.StaffPayroll)
       },
       {
         path: 'department-budget',
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
         loadComponent: () => import('./components/department-budget/department-budget').then(m => m.DepartmentBudget)
       },
       {
@@ -44,22 +51,32 @@ export const routes: Routes = [
       },
       {
         path: 'payment-history',
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.STUDENT] },
         loadComponent: () => import('./components/payment-history/payment-history').then(m => m.PaymentHistory)
       },
       {
         path: 'payments',
+        canActivate: [RoleGuard],
+        data: {roles: [UserRole.ACCOUNTING, UserRole.ADMIN]},
         loadComponent: () => import('./components/payments/payments').then(m => m.Payments)
       },
       {
         path: 'reports',
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
         loadComponent: () => import('./components/reports/reports').then(m => m.Reports)
       },
       {
         path: 'user-management',
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.ADMIN] },
         loadComponent: () => import('./components/user-management/user-management').then(m => m.UserManagement)
       },
       {
         path: 'settings',
+        canActivate: [RoleGuard],
+        data: { roles: [UserRole.ADMIN] },
         loadComponent: () => import('./components/settings/settings').then(m => m.Settings)
       }
     ]
