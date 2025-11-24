@@ -41,8 +41,33 @@ export class Signup {
         notifications: [true],
         language: ['en']
       })
-    }, { validators: this.passwordMatchValidator });
+    },
+    {
+      validators: [
+        this.usernameExistsValidator.bind(this),
+        this.passwordMatchValidator
+      ]
+    });
   }
+
+  usernameExistsValidator(form: FormGroup) {
+    const usernameControl = form.get('username');
+    if (!usernameControl) return null;
+
+    const username = usernameControl.value?.toLowerCase();
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    const exists = users.some((u: any) =>
+      u.username.toLowerCase() === username
+    );
+
+    if (exists) {
+      usernameControl.setErrors({ usernameTaken: true });
+    }
+
+    return null;
+  }
+
 
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
@@ -81,15 +106,9 @@ export class Signup {
       users.push(newUser);
       localStorage.setItem('users', JSON.stringify(users));
 
-      // 3. Save active session (sessionStorage)
-      sessionStorage.setItem('currentUserId', newUser.id);
-
       // 4. Set theme preference cookie (non-HTTP-only but styled as secure)
       // will prob remove this later
       document.cookie = `theme=${newUser.preferences.theme}; Secure; SameSite=Lax; path=/; max-age=2592000`;
-
-      // 5. Push into UserService BehaviorSubject
-      this.userService.setUser(newUser);
 
       // 6. Redirect
       this.successMessage = 'Account created successfully! Please log in to continue.';

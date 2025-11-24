@@ -15,7 +15,7 @@ export class Login {
   loginForm: FormGroup;
   errorMessage = '';
   isLoading = false;
-  isLoginMode = true; // Toggle between login and signup
+  isLoginMode = true;
 
   constructor(
     private fb: FormBuilder,
@@ -27,32 +27,31 @@ export class Login {
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
-  }
 
-  toggleMode() {
-    if (!this.isLoginMode) {
-      // If currently in signup mode, switch to login mode
-      this.isLoginMode = true;
-      this.errorMessage = '';
-      this.loginForm.reset({ rememberMe: false });
-    } else {
-      // If in login mode, navigate to signup page
-      this.router.navigate(['/signup']);
+    // Load remembered user if exists
+    const rememberedUsername = this.getCookie('remember_username');
+    if (rememberedUsername) {
+      this.loginForm.patchValue({
+        username: rememberedUsername,
+        rememberMe: true
+      });
     }
   }
 
-  navigateToSignup() {
-    this.router.navigate(['/signup']);
+  toggleMode() {
+  this.isLoginMode = true;
+  }
+
+  private getCookie(name: string): string | null {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
       const { username, password, rememberMe } = this.loginForm.value;
 
-      // 1. Load users from storage
       const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-      // 2. Find matching user
       const user = users.find((u: any) =>
         u.username.toLowerCase() === username.toLowerCase()
       );
@@ -62,27 +61,26 @@ export class Login {
         return;
       }
 
-      // 3. Validate password
       if (user.password !== password) {
         this.errorMessage = 'Incorrect password';
         return;
       }
 
-      // 4. Save active session
+      // Save session
       sessionStorage.setItem('currentUserId', user.id);
 
-      // 5. Remember Me cookie (simulate httpOnly by storing non-sensitive token)
+      // Correct Remember Me behavior
       if (rememberMe) {
-        const token = btoa(user.id + ':' + Date.now());
-        document.cookie = `remember_token=${token}; Secure; SameSite=Lax; path=/; max-age=604800`;
+        document.cookie = `remember_username=${encodeURIComponent(user.username)}; path=/; max-age=604800; SameSite=Lax`;
+      } else {
+        document.cookie = "remember_username=; Max-Age=0; path=/;";
       }
 
-      // 6. Push into UserService
+      // Push to UserService
       this.userService.setUser(user);
 
-      // 7. Redirect
+      // Redirect
       this.router.navigate(['/dashboard']);
     }
-
   }
 }
