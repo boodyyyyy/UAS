@@ -106,8 +106,18 @@
               Username *
             </label>
             <input type="text" id="username" formControlName="username" placeholder="Enter your username" />
-            @if (signupForm.get('username')?.invalid && signupForm.get('username')?.touched) {
-              <div class="error-message">Username is required (min 3 characters)</div>
+            @if (signupForm.get('username')?.errors && signupForm.get('username')?.touched) {
+              <div class="error-message">
+                @if (signupForm.get('username')?.hasError('required')) {
+                  Username is required
+                }
+                @if (signupForm.get('username')?.hasError('minlength')) {
+                  Username must be at least 3 characters
+                }
+                @if (signupForm.get('username')?.hasError('usernameTaken')) {
+                  This username is already taken. Please choose another one.
+                }
+              </div>
             }
           </div>
           

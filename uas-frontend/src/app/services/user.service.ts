@@ -25,7 +25,6 @@ export interface User {
   providedIn: 'root'
 })
 export class UserService {
-  private readonly STORAGE_KEY = 'uas_user_profile';
   private userSubject = new BehaviorSubject<User>(this.loadUserFromStorage());
   public user$: Observable<User> = this.userSubject.asObservable();
 
@@ -78,8 +77,6 @@ export class UserService {
   setUser(user: User): void {
     this.userSubject.next(user);
     //→ updates RAM + triggers UI updates
-    this.saveUserToStorage(user);
-    //→ saves profile in localStorage so refresh won't break the UI
   }
 
   updateUser(updates: Partial<User>): void {
@@ -89,17 +86,12 @@ export class UserService {
   }
 
   private loadUserFromStorage(): User {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) return JSON.parse(stored);
-      return null as any;
+    const sessionUserId = sessionStorage.getItem('currentUserId');
+    if (!sessionUserId) return null as any;
+
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    return users.find((u: User) => String(u.id) === sessionUserId) || null as any;
   }
 
-  private saveUserToStorage(user: User): void {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-    } catch (error) {
-      console.error('Error saving user to storage:', error);
-    }
-  }
 }
 
