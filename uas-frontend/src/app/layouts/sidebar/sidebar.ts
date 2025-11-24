@@ -90,17 +90,23 @@ export class Sidebar implements OnInit, OnDestroy {
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
+    // Clear hover state when toggling
+    if (!this.isCollapsed) {
+      this.isHovered = false;
+    }
     // Update CSS variable for layout adjustment
     document.documentElement.style.setProperty('--sidebar-width', this.isCollapsed ? '80px' : '280px');
   }
 
   onMouseEnter() {
+    // Only show hover expansion when collapsed
     if (this.isCollapsed) {
       this.isHovered = true;
     }
   }
 
   onMouseLeave() {
+    // Always clear hover state on mouse leave
     this.isHovered = false;
   }
 
