@@ -31,8 +31,7 @@ export class UserService {
   constructor() {
     const sessionUserId = sessionStorage.getItem('currentUserId');
     if (sessionUserId) {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find((u: any) => u.id === sessionUserId);
+      const user = this.loadUserFromStorage();
       if (user) {
         this.userSubject.next(user);
       }
@@ -76,22 +75,51 @@ export class UserService {
 
   setUser(user: User): void {
     this.userSubject.next(user);
-    //→ updates RAM + triggers UI updates
+    // Update RAM + triggers UI updates across all subscribed components
   }
 
   updateUser(updates: Partial<User>): void {
     const currentUser = this.getUser();
     const updatedUser = { ...currentUser, ...updates };
+    
+    // Update in memory
     this.setUser(updatedUser);
+    
+    // Update in users array in localStorage
+    this.persistUserToLocalStorage(updatedUser);
+  }
+
+  /**
+   * Persists user updates to the users array in localStorage
+   * This ensures data survives page refreshes
+   */
+  private persistUserToLocalStorage(user: User): void {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userIndex = users.findIndex((u: any) => u.id === user.id);
+    
+    if (userIndex !== -1) {
+      // Update existing user
+      users[userIndex] = { ...users[userIndex], ...user };
+      localStorage.setItem('users', JSON.stringify(users));
+    }
   }
 
   private loadUserFromStorage(): User {
     const sessionUserId = sessionStorage.getItem('currentUserId');
     if (!sessionUserId) return null as any;
 
+    // Load user from users array
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    return users.find((u: User) => String(u.id) === sessionUserId) || null as any;
+    const user = users.find((u: User) => String(u.id) === sessionUserId);
+    
+    if (!user) return null as any;
+    
+    // Check for user-specific profile picture in localStorage (overrides users array)
+    const savedPicture = localStorage.getItem(`profile_picture_${sessionUserId}`);
+    if (savedPicture) {
+      user.picture = savedPicture;
+    }
+    
+    return user;
   }
-
 }
-
