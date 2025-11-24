@@ -118,23 +118,65 @@ export class Profile implements OnInit, OnDestroy {
 
   private updateProfilePicture(pictureUrl: string): void {
     this.profileForm.patchValue({ picture: pictureUrl });
+    
+    const userId = this.currentUser.id;
+    
+    // 1. Update UserService (RAM + triggers UI updates)
     this.userService.updateUser({ picture: pictureUrl });
+    
+    // 2. Save to user-specific localStorage (for quick access)
+    localStorage.setItem(`profile_picture_${userId}`, pictureUrl);
+    
+    // 3. Update users array in localStorage (CRITICAL - so it persists across sessions)
+    this.updateUserInLocalStorage({ picture: pictureUrl });
+    
+    // 4. Update local currentUser object
     this.currentUser = { ...this.currentUser, picture: pictureUrl };
+  }
+
+  /**
+   * Updates the user in the users array in localStorage
+   * This ensures changes persist across page refreshes and sessions
+   */
+  private updateUserInLocalStorage(updates: any): void {
+    const userId = this.currentUser.id;
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    
+    // Find the user and update
+    const userIndex = users.findIndex((u: any) => u.id === userId);
+    if (userIndex !== -1) {
+      users[userIndex] = { ...users[userIndex], ...updates };
+      localStorage.setItem('users', JSON.stringify(users));
+    }
   }
 
   onSubmit() {
     if (this.profileForm.valid) {
       const formValue = this.profileForm.value;
+      const userId = this.currentUser.id;
       
-      // Update user through service
-      this.userService.updateUser({
+      // Prepare updates
+      const updates = {
         username: formValue.username,
         name: formValue.name,
         email: formValue.email,
         picture: formValue.picture || '',
         creditCard: formValue.creditCard.number ? formValue.creditCard : { number: '', expiry: '', cvv: '' },
         preferences: formValue.preferences
-      });
+      };
+      
+      // 1. Update UserService (RAM + triggers UI updates)
+      this.userService.updateUser(updates);
+
+      // 2. Save profile picture to user-specific localStorage
+      if (formValue.picture) {
+        localStorage.setItem(`profile_picture_${userId}`, formValue.picture);
+      } else {
+        localStorage.removeItem(`profile_picture_${userId}`);
+      }
+      
+      // 3. Update users array in localStorage (CRITICAL FIX)
+      this.updateUserInLocalStorage(updates);
 
       this.successMessage = 'Profile updated successfully!';
       setTimeout(() => this.successMessage = '', 3000);

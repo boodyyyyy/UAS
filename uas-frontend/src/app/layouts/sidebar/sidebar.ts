@@ -110,11 +110,26 @@ export class Sidebar implements OnInit, OnDestroy {
   }
 
   logout() {
+    // Get user ID before clearing session
+    const userId = this.currentUser.id;
+    
+    // Clear session storage
     sessionStorage.removeItem('currentUserId');
-    this.userService.setUser(null as any); 
+    
+    // Clear user-specific profile picture from localStorage
+    if (userId) {
+      localStorage.removeItem(`profile_picture_${userId}`);
+    }
+    
+    // Clear theme cookie (optional - if you want theme to persist, remove this)
+    // document.cookie = "theme=; Max-Age=0; path=/;";
+    
+    // Clear user from service
+    this.userService.setUser(null as any);
+    
+    // Navigate to login
     this.router.navigate(['/login']);
   }
-
 
   isActive(route: string): boolean {
     const currentUrl = this.router.url;
