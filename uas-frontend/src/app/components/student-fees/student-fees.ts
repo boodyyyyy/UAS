@@ -9,6 +9,10 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { Chart, registerables } from 'chart.js';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-student-fees',
@@ -183,14 +187,27 @@ export class StudentFees implements OnInit {
   filterFeesByRole() {
     if (this.isStudent) {
       // Students only see their own fees
-      this.fees = this.allFees.filter(f => 
-        f.studentId === this.currentUser.id || f.studentName === this.currentUser.name
-      );
+      const currentId = String(this.currentUser.id).trim();
+      const currentName = this.currentUser.name.trim().toLowerCase();
+
+      this.fees = this.allFees.filter(f => {
+        return String(f.studentId).trim() === currentId ||
+              f.studentName.trim().toLowerCase() === currentName;
+      });
+
     } else {
-      // Accounting and Admin see all fees
+      // Accounting + Admin see all fees
       this.fees = this.allFees;
     }
+
     this.updateCharts();
+
+    //For my info: 
+    //User stored in localStorage
+    //id = "1712335345345"
+
+    //Fee stored in student-fee list
+    //studentId = 1712335345345 (number)
   }
 
   updateCharts() {

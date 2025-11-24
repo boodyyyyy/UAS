@@ -41,8 +41,33 @@ export class Signup {
         notifications: [true],
         language: ['en']
       })
-    }, { validators: this.passwordMatchValidator });
+    },
+    {
+      validators: [
+        this.usernameExistsValidator.bind(this),
+        this.passwordMatchValidator
+      ]
+    });
   }
+
+  usernameExistsValidator(form: FormGroup) {
+    const usernameControl = form.get('username');
+    if (!usernameControl) return null;
+
+    const username = usernameControl.value?.toLowerCase();
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    const exists = users.some((u: any) =>
+      u.username.toLowerCase() === username
+    );
+
+    if (exists) {
+      usernameControl.setErrors({ usernameTaken: true });
+    }
+
+    return null;
+  }
+
 
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
@@ -67,20 +92,28 @@ export class Signup {
         username: formValue.username,
         name: formValue.name,
         email: formValue.email,
+        password: formValue.password, 
         picture: formValue.picture || '',
         role: formValue.role as UserRole,
         creditCard: formValue.creditCard || { number: '', expiry: '', cvv: '' },
         preferences: formValue.preferences || { theme: 'light', notifications: true, language: 'en' }
       };
       
-      // Save user to UserService
-      this.userService.setUser(newUser);
-      
-      // Show success and redirect to dashboard
-      this.successMessage = 'Account created successfully! Redirecting to dashboard...';
-      setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 1500);
+      // 1. Load existing users
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+      // 2. Save new user
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+
+      // 4. Set theme preference cookie (non-HTTP-only but styled as secure)
+      // will prob remove this later
+      document.cookie = `theme=${newUser.preferences.theme}; Secure; SameSite=Lax; path=/; max-age=2592000`;
+
+      // 6. Redirect
+      this.successMessage = 'Account created successfully! Please log in to continue.';
+      setTimeout(() => this.router.navigate(['/login']), 1500);
+
     }
   }
 }

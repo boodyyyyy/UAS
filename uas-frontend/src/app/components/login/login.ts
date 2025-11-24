@@ -15,7 +15,7 @@ export class Login {
   loginForm: FormGroup;
   errorMessage = '';
   isLoading = false;
-  isLoginMode = true; // Toggle between login and signup
+  isLoginMode = true;
 
   constructor(
     private fb: FormBuilder,
@@ -27,50 +27,59 @@ export class Login {
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
-  }
 
-  toggleMode() {
-    if (!this.isLoginMode) {
-      // If currently in signup mode, switch to login mode
-      this.isLoginMode = true;
-      this.errorMessage = '';
-      this.loginForm.reset({ rememberMe: false });
-    } else {
-      // If in login mode, navigate to signup page
-      this.router.navigate(['/signup']);
+    // Load remembered user if exists
+    const rememberedUsername = this.getCookie('remember_username');
+    if (rememberedUsername) {
+      this.loginForm.patchValue({
+        username: rememberedUsername,
+        rememberMe: true
+      });
     }
   }
 
-  navigateToSignup() {
-    this.router.navigate(['/signup']);
+  toggleMode() {
+  this.isLoginMode = true;
+  }
+
+  private getCookie(name: string): string | null {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const username = this.loginForm.value.username.toLowerCase();
-      const password = this.loginForm.value.password;
-      
-      // Determine role based on username (for demo purposes)
-      let role: UserRole = UserRole.STUDENT;
-      if (username.includes('admin')) {
-        role = UserRole.ADMIN;
-      } else if (username.includes('accounting') || username.includes('finance')) {
-        role = UserRole.ACCOUNTING;
+      const { username, password, rememberMe } = this.loginForm.value;
+
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: any) =>
+        u.username.toLowerCase() === username.toLowerCase()
+      );
+
+      if (!user) {
+        this.errorMessage = 'User not found';
+        return;
       }
-      
-      // Set user in UserService
-      this.userService.setUser({
-        id: Date.now().toString(),
-        username: this.loginForm.value.username,
-        name: this.loginForm.value.username.charAt(0).toUpperCase() + this.loginForm.value.username.slice(1),
-        email: `${this.loginForm.value.username}@university.edu`,
-        picture: '',
-        role: role,
-        creditCard: { number: '', expiry: '', cvv: '' },
-        preferences: { theme: 'light', notifications: true, language: 'en' }
-      });
-      
-      // Navigate to dashboard
+
+      if (user.password !== password) {
+        this.errorMessage = 'Incorrect password';
+        return;
+      }
+
+      // Save session
+      sessionStorage.setItem('currentUserId', user.id);
+
+      // Correct Remember Me behavior
+      if (rememberMe) {
+        document.cookie = `remember_username=${encodeURIComponent(user.username)}; path=/; max-age=604800; SameSite=Lax`;
+      } else {
+        document.cookie = "remember_username=; Max-Age=0; path=/;";
+      }
+
+      // Push to UserService
+      this.userService.setUser(user);
+
+      // Redirect
       this.router.navigate(['/dashboard']);
     }
   }

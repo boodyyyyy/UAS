@@ -25,23 +25,17 @@ export interface User {
   providedIn: 'root'
 })
 export class UserService {
-  private readonly STORAGE_KEY = 'uas_user_profile';
   private userSubject = new BehaviorSubject<User>(this.loadUserFromStorage());
   public user$: Observable<User> = this.userSubject.asObservable();
 
   constructor() {
-    // Initialize with default user if none exists
-    if (!this.getUser()) {
-      this.setUser({
-        id: '1',
-        username: 'demouser',
-        name: 'Demo User',
-        email: 'demo@university.edu',
-        picture: '',
-        role: UserRole.STUDENT,
-        creditCard: { number: '', expiry: '', cvv: '' },
-        preferences: { theme: 'light', notifications: true, language: 'en' }
-      });
+    const sessionUserId = sessionStorage.getItem('currentUserId');
+    if (sessionUserId) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: any) => u.id === sessionUserId);
+      if (user) {
+        this.userSubject.next(user);
+      }
     }
   }
 
@@ -82,7 +76,7 @@ export class UserService {
 
   setUser(user: User): void {
     this.userSubject.next(user);
-    this.saveUserToStorage(user);
+    //→ updates RAM + triggers UI updates
   }
 
   updateUser(updates: Partial<User>): void {
@@ -92,37 +86,12 @@ export class UserService {
   }
 
   private loadUserFromStorage(): User {
-    try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        const user = JSON.parse(stored);
-        // Ensure role is a valid UserRole enum value
-        if (!user.role || !Object.values(UserRole).includes(user.role)) {
-          user.role = UserRole.STUDENT;
-        }
-        return user;
-      }
-    } catch (error) {
-      console.error('Error loading user from storage:', error);
-    }
-    return {
-      id: '1',
-      username: 'demouser',
-      name: 'Demo User',
-      email: 'demo@university.edu',
-      picture: '',
-      role: UserRole.STUDENT,
-      creditCard: { number: '', expiry: '', cvv: '' },
-      preferences: { theme: 'light', notifications: true, language: 'en' }
-    };
+    const sessionUserId = sessionStorage.getItem('currentUserId');
+    if (!sessionUserId) return null as any;
+
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    return users.find((u: User) => String(u.id) === sessionUserId) || null as any;
   }
 
-  private saveUserToStorage(user: User): void {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-    } catch (error) {
-      console.error('Error saving user to storage:', error);
-    }
-  }
 }
 

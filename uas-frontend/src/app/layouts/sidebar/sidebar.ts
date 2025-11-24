@@ -34,9 +34,11 @@ export class Sidebar implements OnInit, OnDestroy {
     
     // Accounting menu items
     { label: 'Invoices', route: '/dashboard/student-fees', icon: 'document', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
+    { label: 'Staff Payroll', route: '/dashboard/staff-payroll', icon: 'payroll', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
     { label: 'Payments', route: '/dashboard/payments', icon: 'payment', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
     { label: 'Department Budget', route: '/dashboard/department-budget', icon: 'budget', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
     { label: 'Reports', route: '/dashboard/reports', icon: 'chart', roles: [UserRole.ACCOUNTING, UserRole.ADMIN] },
+    
     
     // Admin menu items
     { label: 'User Management', route: '/dashboard/user-management', icon: 'users', roles: [UserRole.ADMIN] },
@@ -108,9 +110,11 @@ export class Sidebar implements OnInit, OnDestroy {
   }
 
   logout() {
-    // No-op for frontend-only version
-    this.router.navigate(['/home']);
+    sessionStorage.removeItem('currentUserId');
+    this.userService.setUser(null as any); 
+    this.router.navigate(['/login']);
   }
+
 
   isActive(route: string): boolean {
     const currentUrl = this.router.url;
