@@ -65,6 +65,12 @@ export class Login {
         this.errorMessage = 'Incorrect password';
         return;
       }
+      
+      // Load saved profile picture from localStorage
+      const savedPicture = localStorage.getItem(`profile_picture_${user.id}`);
+      if (savedPicture) {
+        user.picture = savedPicture;
+      }
 
       // Save session
       sessionStorage.setItem('currentUserId', user.id);
