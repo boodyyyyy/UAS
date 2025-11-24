@@ -76,10 +76,10 @@
           "builder": "@angular/build:karma",
           "options": {
             "polyfills": [
-              "zone.js",
-              "zone.js/testing"
+              "zone.js"
             ],
             "tsConfig": "tsconfig.spec.json",
+            "main": "src/test.ts",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
