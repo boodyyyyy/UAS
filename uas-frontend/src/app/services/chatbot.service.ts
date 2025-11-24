@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { UserRole } from '../models/user.model';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -20,7 +21,11 @@ export interface ChatResponse {
 export class ChatbotService {
   private readonly API_URL: string;
   private readonly API_KEY: string;
-  private readonly SYSTEM_PROMPT = `You are a helpful financial assistant for the University Accounting System (UAS). Your role is to help students, staff, and administrators understand and navigate the system effectively.
+  /**
+   * Get system prompt based on user role
+   */
+  private getSystemPrompt(userRole?: UserRole): string {
+    const basePrompt = `You are a helpful financial assistant for the University Accounting System (UAS). Your role is to help students, staff, and administrators understand and navigate the system effectively.
 
 Your responsibilities include:
 - Answering questions about how the University Accounting System works
@@ -36,13 +41,92 @@ Key system features you should know about:
 - Staff Payroll: Administrators can manage employee salaries, allowances, and deductions with automated payroll reports.
 - Department Budget: Track departmental income and expenses with interactive charts and visualizations.
 - Dashboard: Overview of financial metrics, payment progress, and revenue trends.
-- Profile Management: Users can update their profile information and preferences.
+- Profile Management: Users can update their profile information and preferences.`;
+
+    // Add role-based access restrictions
+    let accessRestrictions = '';
+    
+    if (userRole === UserRole.STUDENT) {
+      accessRestrictions = `
+
+IMPORTANT ACCESS RESTRICTIONS FOR STUDENT USERS:
+You are currently assisting a STUDENT user. Students have LIMITED access to information.
+
+STUDENTS CANNOT ACCESS:
+- Administrative functions and settings
+- User management operations
+- System configuration details
+- Accounting/manager-level financial reports
+- Staff payroll information beyond general explanations
+- Department budget details beyond their own fees
+- Any administrative or management-level operations
+
+STUDENTS CAN ACCESS:
+- Their own student fees and invoices
+- Their own payment history
+- How to make payments
+- How to update their profile
+- General system navigation help
+- Information about their own account
+
+If a student asks about administrative functions, user management, system settings, accounting operations, or any manager/administrator-level features, you MUST respond with:
+"I'm sorry, but you don't have access to this information. This feature is restricted to administrators and managers. Please contact your administrator if you need assistance with administrative tasks."
+
+Be polite but firm about these restrictions.`;
+    } else if (userRole === UserRole.ACCOUNTING) {
+      accessRestrictions = `
+
+IMPORTANT ACCESS RESTRICTIONS FOR ACCOUNTING/MANAGER USERS:
+You are currently assisting an ACCOUNTING/MANAGER user. Accounting users have MANAGER-LEVEL access but NOT full administrative access.
+
+ACCOUNTING USERS CANNOT ACCESS:
+- Administrative system settings and configuration
+- User management operations (creating, deleting, modifying user accounts)
+- System-level administrative functions
+- Any operations that require full administrator privileges
+
+ACCOUNTING USERS CAN ACCESS:
+- Student fees and invoices management
+- Payment processing and history
+- Department budget information
+- Staff payroll information
+- Financial reports and analytics
+- General accounting operations
+
+If an accounting user asks about administrative functions, user management, system configuration, or any administrator-only features, you MUST respond with:
+"I'm sorry, but you don't have access to this information. This feature is restricted to administrators only. Please contact your system administrator if you need assistance with administrative tasks."
+
+Be polite but firm about these restrictions.`;
+    } else if (userRole === UserRole.ADMIN) {
+      accessRestrictions = `
+
+IMPORTANT ACCESS INFORMATION FOR ADMINISTRATOR USERS:
+You are currently assisting an ADMINISTRATOR user. Administrators have FULL ACCESS to all system features and information.
+
+ADMINISTRATORS CAN ACCESS:
+- All student fees and invoices
+- All payment processing and history
+- Department budget management
+- Staff payroll management
+- User management (create, edit, delete users)
+- System settings and configuration
+- All financial reports and analytics
+- All administrative functions
+
+Administrators have unrestricted access to help with any system-related questions.`;
+    }
+
+    return basePrompt + accessRestrictions + `
 
 Always be helpful, clear, and concise. If you don't know something specific about the system, guide users to the appropriate section or suggest they contact support.`;
+  }
 
   constructor(private http: HttpClient) {
     // Determine which API to use based on environment configuration
-    if (environment.chatApiProvider === 'together') {
+    if (environment.chatApiProvider === 'gemini') {
+      this.API_URL = environment.geminiApiUrl;
+      this.API_KEY = environment.geminiApiKey;
+    } else if (environment.chatApiProvider === 'together') {
       this.API_URL = environment.togetherApiUrl;
       this.API_KEY = environment.togetherApiKey;
     } else {
@@ -54,8 +138,35 @@ Always be helpful, clear, and concise. If you don't know something specific abou
   /**
    * Get fallback response when API is not configured
    */
-  private getFallbackResponse(userMessage: string): string {
+  private getFallbackResponse(userMessage: string, userRole?: UserRole): string {
     const lowerMessage = userMessage.toLowerCase().trim();
+    
+    // Check for restricted topics based on user role
+    const isAdminQuestion = lowerMessage.includes('user management') || 
+                          lowerMessage.includes('manage users') ||
+                          lowerMessage.includes('create user') ||
+                          lowerMessage.includes('delete user') ||
+                          lowerMessage.includes('system settings') ||
+                          lowerMessage.includes('system configuration') ||
+                          lowerMessage.includes('administrative') ||
+                          lowerMessage.includes('admin access');
+    
+    const isManagerQuestion = lowerMessage.includes('payroll') ||
+                             lowerMessage.includes('staff pay') ||
+                             lowerMessage.includes('employee pay') ||
+                             lowerMessage.includes('department budget') ||
+                             lowerMessage.includes('budget management');
+    
+    // Role-based access restrictions
+    if (userRole === UserRole.STUDENT) {
+      if (isAdminQuestion || isManagerQuestion) {
+        return 'I\'m sorry, but you don\'t have access to this information. This feature is restricted to administrators and managers. Please contact your administrator if you need assistance with administrative tasks.';
+      }
+    } else if (userRole === UserRole.ACCOUNTING) {
+      if (isAdminQuestion) {
+        return 'I\'m sorry, but you don\'t have access to this information. This feature is restricted to administrators only. Please contact your system administrator if you need assistance with administrative tasks.';
+      }
+    }
     
     // Handle greetings and casual conversation
     if (lowerMessage.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening|howdy)$/i) || 
@@ -439,13 +550,14 @@ What would you like to know about the University Accounting System?`;
    * Send a message to the chatbot API
    * @param userMessage The user's message
    * @param conversationHistory Previous messages in the conversation
+   * @param userRole The role of the user making the request (for access control)
    * @returns Observable with the assistant's response
    */
-  sendMessage(userMessage: string, conversationHistory: ChatMessage[] = []): Observable<ChatResponse> {
+  sendMessage(userMessage: string, conversationHistory: ChatMessage[] = [], userRole?: UserRole): Observable<ChatResponse> {
     // Check if API key is configured
     if (!this.API_KEY || this.API_KEY.includes('YOUR_') || this.API_KEY === '') {
-      // Return fallback response instead of error
-      const fallbackResponse = this.getFallbackResponse(userMessage);
+      // Return fallback response instead of error (with role-based restrictions)
+      const fallbackResponse = this.getFallbackResponse(userMessage, userRole);
       return new Observable(observer => {
         // Simulate API delay for better UX
         setTimeout(() => {
@@ -455,9 +567,10 @@ What would you like to know about the University Accounting System?`;
       });
     }
 
-    // Build the messages array with system prompt and conversation history
+    // Build the messages array with system prompt (role-aware) and conversation history
+    const systemPrompt = this.getSystemPrompt(userRole);
     const messages: ChatMessage[] = [
-      { role: 'system', content: this.SYSTEM_PROMPT },
+      { role: 'system', content: systemPrompt },
       ...conversationHistory,
       { role: 'user', content: userMessage }
     ];
@@ -465,14 +578,27 @@ What would you like to know about the University Accounting System?`;
     // Prepare the request body based on API provider
     const requestBody = this.prepareRequestBody(messages);
 
-    // Set up headers
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.API_KEY}`
-    });
+    // Set up headers and URL based on API provider
+    let headers: HttpHeaders;
+    let apiUrl: string;
+
+    if (environment.chatApiProvider === 'gemini') {
+      // Gemini API uses API key as query parameter, not in headers
+      headers = new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+      apiUrl = `${this.API_URL}?key=${this.API_KEY}`;
+    } else {
+      // OpenAI and Together AI use Bearer token in headers
+      headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.API_KEY}`
+      });
+      apiUrl = this.API_URL;
+    }
 
     // Make the API call
-    return this.http.post<any>(this.API_URL, requestBody, { headers }).pipe(
+    return this.http.post<any>(apiUrl, requestBody, { headers }).pipe(
       map(response => {
         // Extract the response message based on API provider
         const message = this.extractMessage(response);
@@ -489,7 +615,35 @@ What would you like to know about the University Accounting System?`;
    * Prepare request body based on API provider
    */
   private prepareRequestBody(messages: ChatMessage[]): any {
-    if (environment.chatApiProvider === 'together') {
+    if (environment.chatApiProvider === 'gemini') {
+      // Gemini API request format
+      // Separate system message from conversation
+      const systemMessage = messages.find(msg => msg.role === 'system');
+      const conversationMessages = messages.filter(msg => msg.role !== 'system');
+      
+      // Convert to Gemini format: contents array with parts
+      const contents = conversationMessages.map(msg => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      }));
+
+      const requestBody: any = {
+        contents: contents,
+        generationConfig: {
+          maxOutputTokens: 1000,
+          temperature: 0.7
+        }
+      };
+
+      // Add system instruction if present
+      if (systemMessage) {
+        requestBody.systemInstruction = {
+          parts: [{ text: systemMessage.content }]
+        };
+      }
+
+      return requestBody;
+    } else if (environment.chatApiProvider === 'together') {
       // Together AI request format
       return {
         model: 'meta-llama/Llama-3-70b-chat-hf', // You can change this model
@@ -518,7 +672,12 @@ What would you like to know about the University Accounting System?`;
    * Extract message from API response based on provider
    */
   private extractMessage(response: any): string {
-    if (environment.chatApiProvider === 'together') {
+    if (environment.chatApiProvider === 'gemini') {
+      // Gemini API response format: candidates[0].content.parts[0].text
+      return response.candidates?.[0]?.content?.parts?.[0]?.text || 
+             response.candidates?.[0]?.content?.text ||
+             'I apologize, but I couldn\'t process your request.';
+    } else if (environment.chatApiProvider === 'together') {
       return response.choices?.[0]?.message?.content || 'I apologize, but I couldn\'t process your request.';
     } else {
       // OpenAI format
@@ -538,8 +697,14 @@ What would you like to know about the University Accounting System?`;
     } else {
       // Server-side error
       switch (error.status) {
+        case 400:
+          errorMessage = error.error?.error?.message || 'Invalid request. Please check your input.';
+          break;
         case 401:
           errorMessage = 'API key is invalid. Please check your API key configuration.';
+          break;
+        case 403:
+          errorMessage = 'API key does not have permission to access this resource.';
           break;
         case 429:
           errorMessage = 'Rate limit exceeded. Please try again in a moment.';
@@ -548,7 +713,9 @@ What would you like to know about the University Accounting System?`;
           errorMessage = 'Server error. Please try again later.';
           break;
         default:
-          errorMessage = error.error?.error?.message || `Error ${error.status}: ${error.message}`;
+          errorMessage = error.error?.error?.message || 
+                        error.error?.error?.status || 
+                        `Error ${error.status}: ${error.message}`;
       }
     }
 

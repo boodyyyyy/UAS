@@ -21,12 +21,13 @@ export const environment = {
   
   openaiApiKey: 'YOUR_OPENAI_API_KEY_HERE',
   togetherApiKey: 'YOUR_TOGETHER_API_KEY_HERE',
-  
-  // Choose which API to use: 'openai' or 'together'
-  chatApiProvider: 'openai' as 'openai' | 'together',
+  geminiApiKey: 'AIzaSyALIL0LuNbvUPA8zJM-Yz4aeuR53M6NVRc',
+  // Choose which API to use: 'openai', 'together', or 'gemini'
+  chatApiProvider: 'gemini' as 'openai' | 'together' | 'gemini',
   
   // API endpoints (usually don't need to change)
   openaiApiUrl: 'https://api.openai.com/v1/chat/completions',
-  togetherApiUrl: 'https://api.together.xyz/v1/chat/completions'
+  togetherApiUrl: 'https://api.together.xyz/v1/chat/completions',
+  geminiApiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
 };
 

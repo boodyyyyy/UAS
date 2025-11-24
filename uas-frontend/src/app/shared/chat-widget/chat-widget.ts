@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatbotService } from '../../services/chatbot.service';
 import { StorageService } from '../../services/storage.service';
+import { UserService } from '../../services/user.service';
+import { UserRole } from '../../models/user.model';
 
 interface Message {
   text: string;
@@ -29,7 +31,8 @@ export class ChatWidget implements OnInit, AfterViewChecked {
 
   constructor(
     private chatbotService: ChatbotService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -88,8 +91,12 @@ export class ChatWidget implements OnInit, AfterViewChecked {
       this.messages.slice(0, -1) // Exclude the just-added user message
     );
 
-    // Send message to chatbot service
-    this.chatbotService.sendMessage(messageText, conversationHistory).subscribe({
+    // Get current user's role for access control
+    const currentUser = this.userService.getUser();
+    const userRole: UserRole | undefined = currentUser?.role;
+
+    // Send message to chatbot service with user role
+    this.chatbotService.sendMessage(messageText, conversationHistory, userRole).subscribe({
       next: (response) => {
         const botMessage: Message = {
           text: response.message,
