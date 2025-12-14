@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 import { UserRole } from '../../models/user.model';
 
 @Component({
@@ -21,53 +21,21 @@ export class Signup {
   constructor(
     private fb: FormBuilder,
     public router: Router,
-    private userService: UserService
+    private authService: AuthService
   ) {
     this.signupForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
       role: [UserRole.STUDENT, [Validators.required]],
-      picture: [''],
-      creditCard: this.fb.group({
-        number: [''],
-        expiry: [''],
-        cvv: ['']
-      }),
-      preferences: this.fb.group({
-        theme: ['light'],
-        notifications: [true],
-        language: ['en']
-      })
+      picture: ['']
     },
     {
-      validators: [
-        this.usernameExistsValidator.bind(this),
-        this.passwordMatchValidator
-      ]
+      validators: [this.passwordMatchValidator]
     });
   }
-
-  usernameExistsValidator(form: FormGroup) {
-    const usernameControl = form.get('username');
-    if (!usernameControl) return null;
-
-    const username = usernameControl.value?.toLowerCase();
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-    const exists = users.some((u: any) =>
-      u.username.toLowerCase() === username
-    );
-
-    if (exists) {
-      usernameControl.setErrors({ usernameTaken: true });
-    }
-
-    return null;
-  }
-
 
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
@@ -84,36 +52,51 @@ export class Signup {
 
   onSubmit() {
     if (this.signupForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      this.successMessage = '';
+      
       const formValue = this.signupForm.value;
       
-      // Create user object
-      const newUser = {
-        id: Date.now().toString(),
+      // Map UserRole enum to API role string
+      const roleMap: { [key: string]: string } = {
+        [UserRole.ADMIN]: 'admin',
+        [UserRole.ACCOUNTING]: 'accounting',
+        [UserRole.STUDENT]: 'student'
+      };
+      
+      const registerData = {
         username: formValue.username,
         name: formValue.name,
         email: formValue.email,
-        password: formValue.password, 
-        picture: formValue.picture || '',
-        role: formValue.role as UserRole,
-        creditCard: formValue.creditCard || { number: '', expiry: '', cvv: '' },
-        preferences: formValue.preferences || { theme: 'light', notifications: true, language: 'en' }
+        password: formValue.password,
+        password_confirmation: formValue.confirmPassword,
+        role: roleMap[formValue.role] || 'student',
+        picture: formValue.picture || ''
       };
-      
-      // 1. Load existing users
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
 
-      // 2. Save new user
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
-
-      // 4. Set theme preference cookie (non-HTTP-only but styled as secure)
-      // will prob remove this later
-      document.cookie = `theme=${newUser.preferences.theme}; Secure; SameSite=Lax; path=/; max-age=2592000`;
-
-      // 6. Redirect
-      this.successMessage = 'Account created successfully! Please log in to continue.';
-      setTimeout(() => this.router.navigate(['/login']), 1500);
-
+      this.authService.register(registerData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          this.successMessage = 'Account created successfully! Redirecting to login...';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1500);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          if (error.error && error.error.message) {
+            this.errorMessage = error.error.message;
+          } else if (error.error && error.error.errors) {
+            // Handle validation errors
+            const errors = error.error.errors;
+            const firstError = Object.values(errors)[0];
+            this.errorMessage = Array.isArray(firstError) ? firstError[0] : String(firstError);
+          } else {
+            this.errorMessage = 'Registration failed. Please try again.';
+          }
+        }
+      });
     }
   }
 }
