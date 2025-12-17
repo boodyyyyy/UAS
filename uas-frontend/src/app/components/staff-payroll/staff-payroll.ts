@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { Payroll } from '../../models/payroll.model';
 
 @Component({
   selector: 'app-staff-payroll',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './staff-payroll.html',
   styleUrl: './staff-payroll.scss',
 })
