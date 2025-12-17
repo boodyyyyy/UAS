@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { UserService } from '../../services/user.service';
-import { UserRole } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +19,7 @@ export class Login {
   constructor(
     private fb: FormBuilder,
     public router: Router,
-    private userService: UserService
+    private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -39,7 +38,7 @@ export class Login {
   }
 
   toggleMode() {
-  this.isLoginMode = true;
+    this.isLoginMode = true;
   }
 
   private getCookie(name: string): string | null {
@@ -49,44 +48,34 @@ export class Login {
 
   onSubmit() {
     if (this.loginForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = '';
+      
       const { username, password, rememberMe } = this.loginForm.value;
 
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find((u: any) =>
-        u.username.toLowerCase() === username.toLowerCase()
-      );
+      this.authService.login(username, password).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          
+          // Handle Remember Me
+          if (rememberMe) {
+            document.cookie = `remember_username=${encodeURIComponent(username)}; path=/; max-age=604800; SameSite=Lax`;
+          } else {
+            document.cookie = "remember_username=; Max-Age=0; path=/;";
+          }
 
-      if (!user) {
-        this.errorMessage = 'User not found';
-        return;
-      }
-
-      if (user.password !== password) {
-        this.errorMessage = 'Incorrect password';
-        return;
-      }
-      
-      // Load saved profile picture from localStorage
-      const savedPicture = localStorage.getItem(`profile_picture_${user.id}`);
-      if (savedPicture) {
-        user.picture = savedPicture;
-      }
-
-      // Save session
-      sessionStorage.setItem('currentUserId', user.id);
-
-      // Correct Remember Me behavior
-      if (rememberMe) {
-        document.cookie = `remember_username=${encodeURIComponent(user.username)}; path=/; max-age=604800; SameSite=Lax`;
-      } else {
-        document.cookie = "remember_username=; Max-Age=0; path=/;";
-      }
-
-      // Push to UserService
-      this.userService.setUser(user);
-
-      // Redirect
-      this.router.navigate(['/dashboard']);
+          // Redirect to dashboard
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          if (error.error && error.error.message) {
+            this.errorMessage = error.error.message;
+          } else {
+            this.errorMessage = 'Login failed. Please check your credentials.';
+          }
+        }
+      });
     }
   }
 }
