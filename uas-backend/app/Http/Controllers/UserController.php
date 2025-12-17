@@ -7,9 +7,11 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Mail\NewsletterSubscriptionMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -119,12 +121,28 @@ class UserController extends Controller
             }
         }
 
+        // Handle newsletter subscription
+        $wasSubscribed = $user->newsletter_subscribed;
+        if ($request->has('newsletter_subscribed')) {
+            $updateData['newsletter_subscribed'] = $request->boolean('newsletter_subscribed');
+        }
+
         $user->update($updateData);
         $user->load(['student', 'staff']);
 
+        // Send welcome email if user just subscribed
+        if (!$wasSubscribed && $user->newsletter_subscribed) {
+            try {
+                Mail::to($user->email)->send(new NewsletterSubscriptionMail($user));
+            } catch (\Exception $e) {
+                // Log error but don't fail the request
+                \Log::error('Failed to send newsletter subscription email: ' . $e->getMessage());
+            }
+        }
+
         return response()->json([
             'data' => new UserResource($user),
-            'message' => 'User updated successfully'
+            'message' => 'User updated successfully' . ($user->newsletter_subscribed && !$wasSubscribed ? '. Welcome email sent!' : '')
         ], 200);
     }
 

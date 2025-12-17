@@ -7,11 +7,14 @@ import { UserRole } from '../models/user.model';
  * 
  * This test suite validates the UserService which manages user state and authentication:
  * - User state management with BehaviorSubject and Observable
- * - Loading user from sessionStorage on service initialization
+ * - Loading user from sessionStorage on service initialization (legacy support)
  * - Role-based helper methods (isStudent, isAccounting, isAdmin)
  * - Access control methods (hasRole, canAccess)
  * - User updates and state synchronization
- * - Integration with localStorage and sessionStorage
+ * - Integration with localStorage for profile picture caching (legacy)
+ * 
+ * Note: User data is now primarily stored in the database and fetched via API.
+ * localStorage is only used for profile picture caching and legacy support.
  */
 
 describe('UserService', () => {
@@ -25,17 +28,18 @@ describe('UserService', () => {
     picture: 'profile.jpg',
     role: UserRole.STUDENT,
     creditCard: { number: '1234', expiry: '12/25', cvv: '123' },
-    preferences: { theme: 'light', notifications: true, language: 'en' }
+    newsletterSubscribed: false
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     
-    // Setup: Add users to localStorage
+    // Setup: Add users to localStorage (legacy support - users are now in database)
+    // This is only for testing the legacy localStorage loading functionality
     localStorage.setItem('users', JSON.stringify([
       mockUser,
-      { id: '2', username: 'admin', role: UserRole.ADMIN, email: 'admin@test.com' },
-      { id: '3', username: 'accountant', role: UserRole.ACCOUNTING, email: 'acc@test.com' }
+      { id: '2', username: 'admin', role: UserRole.ADMIN, email: 'admin@test.com', picture: '', newsletterSubscribed: false },
+      { id: '3', username: 'accountant', role: UserRole.ACCOUNTING, email: 'acc@test.com', picture: '', newsletterSubscribed: false }
     ]));
     
     service = TestBed.inject(UserService);
@@ -233,9 +237,9 @@ describe('UserService', () => {
     expect(service.canAccess([UserRole.STUDENT, UserRole.ADMIN])).toBeFalse();
   });
 
-  // ==================== INTEGRATION WITH STORAGE ====================
+  // ==================== INTEGRATION WITH STORAGE (LEGACY) ====================
 
-  it('should load user from localStorage based on sessionStorage ID', () => {
+  it('should load user from localStorage based on sessionStorage ID (legacy support)', () => {
     sessionStorage.setItem('currentUserId', '2');
     
     const newService = new UserService();
@@ -262,6 +266,16 @@ describe('UserService', () => {
     const user = newService.getUser();
     
     expect(user).toBeFalsy();
+  });
+
+  // ==================== NEWSLETTER SUBSCRIPTION ====================
+
+  it('should handle newsletter subscription field', () => {
+    const userWithNewsletter = { ...mockUser, newsletterSubscribed: true };
+    service.setUser(userWithNewsletter);
+    
+    const user = service.getUser();
+    expect(user.newsletterSubscribed).toBeTrue();
   });
 
   // ==================== OBSERVABLE BEHAVIOR ====================

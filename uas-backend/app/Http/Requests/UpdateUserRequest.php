@@ -25,6 +25,7 @@ class UpdateUserRequest extends FormRequest
             'picture' => 'nullable|string|max:255',
             'role' => 'sometimes|in:admin,accounting,student',
             'is_active' => 'sometimes|boolean',
+            'newsletter_subscribed' => 'sometimes|boolean',
         ];
     }
 }

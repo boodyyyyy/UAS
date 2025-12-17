@@ -41,7 +41,7 @@ Key system features you should know about:
 - Staff Payroll: Administrators can manage employee salaries, allowances, and deductions with automated payroll reports.
 - Department Budget: Track departmental income and expenses with interactive charts and visualizations.
 - Dashboard: Overview of financial metrics, payment progress, and revenue trends.
-- Profile Management: Users can update their profile information and preferences.`;
+- Profile Management: Users can update their profile information.`;
 
     // Add role-based access restrictions
     let accessRestrictions = '';
@@ -368,10 +368,6 @@ The payroll system helps manage employee compensation efficiently with automated
 - **Personal Information**: Username, Full Name, Email Address
 - **Profile Picture**: Upload or change your profile photo
 - **Payment Information**: Credit card details (optional, for future payment processing)
-- **Preferences**:
-  - Theme: Light/Dark mode
-  - Notifications: Email notification preferences
-  - Language: System language selection
 
 **Steps to Update**:
 1. Navigate to Dashboard → Profile
@@ -383,9 +379,8 @@ The payroll system helps manage employee compensation efficiently with automated
 **Profile Features**:
 - All changes are saved immediately
 - Your profile information is used throughout the system
-- Preferences affect how the system displays information to you
 
-The profile section lets you customize your account and system experience. Is there a specific profile setting you'd like help with?`;
+The profile section lets you customize your account information. Is there a specific profile setting you'd like help with?`;
     }
     
     // Dashboard questions
@@ -437,7 +432,7 @@ The dashboard provides a complete overview of your financial status and quick ac
 - 📄 **Student Fees**: View and manage invoices, fees, and payments
 - 👥 **Staff Payroll**: Employee payroll management (admin/accounting)
 - 💰 **Department Budget**: Budget tracking and financial planning
-- 👤 **Profile**: Update your account information and preferences
+- 👤 **Profile**: Update your account information
 
 **Top Header**:
 - Search bar: Search for transactions, reports, and information
@@ -504,7 +499,6 @@ The system helps you stay on top of overdue payments with automatic detection an
 
 **Account Management**:
 - Updating your profile
-- Changing preferences
 - Account settings
 
 **General Questions**:

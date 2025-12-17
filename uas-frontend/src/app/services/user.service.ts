@@ -14,11 +14,7 @@ export interface User {
     expiry: string;
     cvv: string;
   };
-  preferences?: {
-    theme: string;
-    notifications: boolean;
-    language: string;
-  };
+  newsletterSubscribed?: boolean;
 }
 
 @Injectable({

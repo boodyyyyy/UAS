@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../services/user.service';
+import { ApiService } from '../../services/api.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,7 +21,8 @@ export class Profile implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private userService: UserService
+    private userService: UserService,
+    private apiService: ApiService
   ) {
     this.profileForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -32,17 +34,33 @@ export class Profile implements OnInit, OnDestroy {
         expiry: [''],
         cvv: ['']
       }),
-      preferences: this.fb.group({
-        theme: ['light'],
-        notifications: [true],
-        language: ['en']
-      })
+      newsletterSubscribed: [false]
     });
   }
 
   ngOnInit() {
     // Initialize currentUser from service
     this.currentUser = this.userService.getUser();
+    
+    // Load fresh user data from API to get latest newsletter subscription status
+    if (this.currentUser?.id) {
+      this.apiService.getUser(parseInt(this.currentUser.id)).subscribe({
+        next: (response) => {
+          const apiUser = response.data;
+          this.currentUser = {
+            ...this.currentUser,
+            name: apiUser.name,
+            email: apiUser.email,
+            picture: apiUser.picture,
+            newsletterSubscribed: apiUser.newsletterSubscribed || false
+          };
+          this.userService.setUser(this.currentUser);
+        },
+        error: (error) => {
+          console.error('Error loading user data:', error);
+        }
+      });
+    }
     
     // Subscribe to user changes
     this.userSubscription = this.userService.user$.subscribe(user => {
@@ -53,7 +71,7 @@ export class Profile implements OnInit, OnDestroy {
         email: user.email,
         picture: user.picture || '',
         creditCard: user.creditCard || { number: '', expiry: '', cvv: '' },
-        preferences: user.preferences || { theme: 'light', notifications: true, language: 'en' }
+        newsletterSubscribed: user.newsletterSubscribed || false
       }, { emitEvent: false });
     });
   }
@@ -153,33 +171,58 @@ export class Profile implements OnInit, OnDestroy {
   onSubmit() {
     if (this.profileForm.valid) {
       const formValue = this.profileForm.value;
-      const userId = this.currentUser.id;
+      const userId = parseInt(this.currentUser.id);
       
-      // Prepare updates
-      const updates = {
-        username: formValue.username,
+      // Prepare updates for API (using snake_case for backend)
+      const apiUpdates: any = {
         name: formValue.name,
         email: formValue.email,
         picture: formValue.picture || '',
-        creditCard: formValue.creditCard.number ? formValue.creditCard : { number: '', expiry: '', cvv: '' },
-        preferences: formValue.preferences
+        newsletter_subscribed: formValue.newsletterSubscribed || false
       };
       
-      // 1. Update UserService (RAM + triggers UI updates)
-      this.userService.updateUser(updates);
-
-      // 2. Save profile picture to user-specific localStorage
-      if (formValue.picture) {
-        localStorage.setItem(`profile_picture_${userId}`, formValue.picture);
-      } else {
-        localStorage.removeItem(`profile_picture_${userId}`);
-      }
-      
-      // 3. Update users array in localStorage (CRITICAL FIX)
-      this.updateUserInLocalStorage(updates);
-
-      this.successMessage = 'Profile updated successfully!';
-      setTimeout(() => this.successMessage = '', 3000);
+      // Update user via API
+      this.apiService.updateUser(userId, apiUpdates).subscribe({
+        next: (response) => {
+          // Update local user service with response data
+          const updatedUser = {
+            ...this.currentUser,
+            name: response.data.name,
+            email: response.data.email,
+            picture: response.data.picture,
+            newsletterSubscribed: response.data.newsletterSubscribed
+          };
+          
+          this.userService.updateUser(updatedUser);
+          this.currentUser = updatedUser;
+          
+          // Save profile picture to user-specific localStorage
+          if (formValue.picture) {
+            localStorage.setItem(`profile_picture_${userId}`, formValue.picture);
+          } else {
+            localStorage.removeItem(`profile_picture_${userId}`);
+          }
+          
+          // Update users array in localStorage
+          this.updateUserInLocalStorage(updatedUser);
+          
+          // Show success message
+          const wasSubscribed = this.currentUser.newsletterSubscribed || false;
+          if (formValue.newsletterSubscribed && !wasSubscribed) {
+            this.successMessage = 'Profile updated successfully! Welcome email sent to your inbox.';
+          } else if (!formValue.newsletterSubscribed && wasSubscribed) {
+            this.successMessage = 'Profile updated successfully! You have been unsubscribed from the newsletter.';
+          } else {
+            this.successMessage = 'Profile updated successfully!';
+          }
+          setTimeout(() => this.successMessage = '', 5000);
+        },
+        error: (error) => {
+          console.error('Error updating profile:', error);
+          this.successMessage = '';
+          alert(error.error?.message || 'Failed to update profile. Please try again.');
+        }
+      });
     }
   }
 }
