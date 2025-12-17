@@ -74,6 +74,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{id}', [InvoiceController::class, 'destroy']);
         });
         
+        // Draft invoice routes (server-side session storage for bonus requirement)
+        Route::middleware('role:admin,accounting')->group(function () {
+            Route::post('/draft', [InvoiceController::class, 'saveDraft']);
+            Route::get('/draft', [InvoiceController::class, 'getDraft']);
+            Route::delete('/draft', [InvoiceController::class, 'clearDraft']);
+        });
+        
         // Student can pay their own invoice
         Route::post('/{id}/pay', [PaymentController::class, 'payInvoice']);
     });

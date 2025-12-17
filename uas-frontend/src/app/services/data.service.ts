@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, tap, catchError, throwError, map } from 'rxjs';
 import { Invoice, InvoiceStatus } from '../models/invoice.model';
 import { Payment, PaymentMethod, PaymentStatus } from '../models/payment.model';
 import { Payroll, PayrollReport } from '../models/payroll.model';
 import { DepartmentBudget, BudgetTransaction } from '../models/budget.model';
 import { StudentFee } from '../models/student-fee.model';
 import { StorageService } from './storage.service';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,29 +18,16 @@ export class DataService {
   private readonly BUDGET_KEY = 'uas_budget';
   private readonly STUDENT_FEES_KEY = 'uas_student_fees';
 
-  constructor(private storage: StorageService) {
+  constructor(
+    private storage: StorageService,
+    private apiService: ApiService
+  ) {
     this.initializeData();
   }
 
   private initializeData(): void {
-    // Initialize sample data if not exists
-    if (!this.storage.getLocalStorage(this.INVOICES_KEY)) {
-      const sampleInvoices: Invoice[] = [
-        {
-          id: '1',
-          invoiceId: 'INV-2024-001',
-          studentId: '3',
-          studentName: 'Alex Johnson',
-          description: 'Fall 2024 Tuition',
-          amount: 12500,
-          issueDate: new Date('2024-07-15'),
-          dueDate: new Date('2024-08-15'),
-          status: InvoiceStatus.PENDING,
-          createdAt: new Date('2024-07-15')
-        }
-      ];
-      this.storage.setLocalStorage(this.INVOICES_KEY, sampleInvoices);
-    }
+    // Invoices are now stored server-side in database, not localStorage
+    // No need to initialize sample data in localStorage
 
     if (!this.storage.getLocalStorage(this.PAYMENTS_KEY)) {
       this.storage.setLocalStorage(this.PAYMENTS_KEY, []);
@@ -90,33 +78,122 @@ export class DataService {
     }
   }
 
-  // Invoice methods
+  // Invoice methods - Now using server-side database (no localStorage)
   getInvoices(): Observable<Invoice[]> {
-    const invoices = this.storage.getLocalStorage<Invoice[]>(this.INVOICES_KEY) || [];
-    return of(invoices);
+    // Use database API - server-side storage only
+    return this.apiService.getInvoices().pipe(
+      map(response => response.data), // Transform paginated response to Invoice[]
+      catchError(error => {
+        console.error('Failed to get invoices from server', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   createInvoice(invoice: Omit<Invoice, 'id' | 'createdAt'>): Observable<Invoice> {
-    const invoices = this.storage.getLocalStorage<Invoice[]>(this.INVOICES_KEY) || [];
-    const newInvoice: Invoice = {
-      ...invoice,
-      id: Date.now().toString(),
-      createdAt: new Date()
-    };
-    invoices.push(newInvoice);
-    this.storage.setLocalStorage(this.INVOICES_KEY, invoices);
-    return of(newInvoice);
+    // Use database API - server-side storage only
+    return this.apiService.createInvoice({
+      student_id: parseInt(invoice.studentId),
+      description: invoice.description,
+      amount: invoice.amount,
+      issue_date: invoice.issueDate.toISOString().split('T')[0],
+      due_date: invoice.dueDate.toISOString().split('T')[0],
+      status: invoice.status
+    }).pipe(
+      map(response => {
+        // InvoiceResource already returns camelCase format matching Invoice interface
+        const dbInvoice = response.data;
+        return {
+          id: String(dbInvoice.id),
+          invoiceId: dbInvoice.invoiceId,
+          studentId: String(dbInvoice.studentId),
+          studentName: dbInvoice.studentName || '',
+          description: dbInvoice.description,
+          amount: dbInvoice.amount,
+          issueDate: new Date(dbInvoice.issueDate),
+          dueDate: new Date(dbInvoice.dueDate),
+          status: dbInvoice.status as InvoiceStatus,
+          createdAt: new Date(dbInvoice.createdAt)
+        };
+      }),
+      catchError(error => {
+        console.error('Failed to create invoice on server', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   updateInvoiceStatus(id: string, status: InvoiceStatus): Observable<Invoice> {
-    const invoices = this.storage.getLocalStorage<Invoice[]>(this.INVOICES_KEY) || [];
-    const index = invoices.findIndex(i => i.id === id);
-    if (index !== -1) {
-      invoices[index].status = status;
-      this.storage.setLocalStorage(this.INVOICES_KEY, invoices);
-      return of(invoices[index]);
-    }
-    throw new Error('Invoice not found');
+    // Use database API - server-side storage only
+    return this.apiService.updateInvoice(parseInt(id), { status }).pipe(
+      map(response => {
+        // InvoiceResource already returns camelCase format matching Invoice interface
+        const dbInvoice = response.data;
+        return {
+          id: String(dbInvoice.id),
+          invoiceId: dbInvoice.invoiceId,
+          studentId: String(dbInvoice.studentId),
+          studentName: dbInvoice.studentName || '',
+          description: dbInvoice.description,
+          amount: dbInvoice.amount,
+          issueDate: new Date(dbInvoice.issueDate),
+          dueDate: new Date(dbInvoice.dueDate),
+          status: dbInvoice.status as InvoiceStatus,
+          createdAt: new Date(dbInvoice.createdAt)
+        };
+      }),
+      catchError(error => {
+        console.error('Failed to update invoice on server', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // ==================== DRAFT INVOICE METHODS (Server-Side Session) ====================
+  // These methods use server-side session storage (bonus requirement)
+  // Drafts are NOT stored in localStorage - only in server session
+
+  /**
+   * Save invoice draft to server-side session
+   * This demonstrates server-side session usage for milestone bonus
+   * Draft is NOT saved to database or localStorage
+   */
+  saveInvoiceDraft(draft: Partial<Invoice>): Observable<any> {
+    return this.apiService.saveInvoiceDraft(draft).pipe(
+      map(response => response.data),
+      catchError(error => {
+        console.error('Failed to save invoice draft to server session', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Get invoice draft from server-side session
+   * Returns null if no draft exists
+   */
+  getInvoiceDraft(): Observable<Partial<Invoice> | null> {
+    return this.apiService.getInvoiceDraft().pipe(
+      map(response => response.data),
+      catchError(error => {
+        console.error('Failed to get invoice draft from server session', error);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Clear invoice draft from server-side session
+   * Called when invoice is finalized and saved to database
+   */
+  clearInvoiceDraft(): Observable<void> {
+    return this.apiService.clearInvoiceDraft().pipe(
+      map(() => void 0),
+      catchError(error => {
+        console.error('Failed to clear invoice draft from server session', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   // Payment methods
