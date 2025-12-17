@@ -56,7 +56,8 @@ export class ApiService {
   }
 
   createInvoice(invoice: {
-    student_id: number;
+    student_id?: number;
+    student_username?: string;
     description: string;
     amount: number;
     issue_date: string;
@@ -309,11 +310,34 @@ export class ApiService {
   }
 
   getUser(id: number): Observable<{ data: User; message: string }> {
-    return this.http.get<{ data: User; message: string }>(`${this.apiUrl}/users/${id}`);
+    return this.http.get<{ data: User; message: string }>(
+      `${this.apiUrl}/users/${id}`,
+      { withCredentials: true }
+    );
+  }
+
+  createUser(userData: {
+    username: string;
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    role: string;
+    picture?: string;
+  }): Observable<{ data: User; message: string }> {
+    return this.http.post<{ data: User; message: string }>(`${this.apiUrl}/users`, userData);
   }
 
   updateUser(id: number, user: Partial<User>): Observable<{ data: User; message: string }> {
-    return this.http.patch<{ data: User; message: string }>(`${this.apiUrl}/users/${id}`, user);
+    return this.http.patch<{ data: User; message: string }>(
+      `${this.apiUrl}/users/${id}`,
+      user,
+      { withCredentials: true }
+    );
+  }
+
+  deleteUser(id: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/users/${id}`);
   }
 
   updatePassword(id: number, passwords: {

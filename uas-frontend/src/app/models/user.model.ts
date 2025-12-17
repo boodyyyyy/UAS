@@ -16,13 +16,9 @@ export interface User {
     expiry: string;
     cvv: string;
   };
-  preferences?: {
-    theme?: 'light' | 'dark';
-    notifications?: boolean;
-    language?: string;
-  };
   role: UserRole;
   createdAt: Date;
   isActive: boolean;
+  newsletterSubscribed?: boolean;
 }
 

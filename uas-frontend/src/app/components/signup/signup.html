@@ -206,40 +206,7 @@
           <input type="url" id="picture" formControlName="picture" placeholder="https://example.com/image.jpg" />
         </div>
         
-        <div formGroupName="creditCard" class="card-section">
-          <h3>Credit Card (Optional)</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Card Number</label>
-              <input type="text" formControlName="number" placeholder="1234 5678 9012 3456" />
-            </div>
-            <div class="form-group">
-              <label>Expiry</label>
-              <input type="text" formControlName="expiry" placeholder="MM/YY" />
-            </div>
-            <div class="form-group">
-              <label>CVV</label>
-              <input type="text" formControlName="cvv" placeholder="123" maxlength="3" />
-            </div>
-          </div>
-        </div>
-        
-        <div formGroupName="preferences" class="preferences-section">
-          <h3>Preferences</h3>
-          <div class="form-group">
-            <label for="theme">Theme</label>
-            <select id="theme" formControlName="theme">
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="notifications" />
-              <span>Enable Email Notifications</span>
-            </label>
-          </div>
-        </div>
+        <!-- Credit Card section removed - not needed for backend registration -->
         
         @if (errorMessage) {
           <div class="error-alert">{{ errorMessage }}</div>

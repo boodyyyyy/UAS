@@ -210,7 +210,8 @@ export class AuthService {
       name: apiUser.name,
       email: apiUser.email,
       picture: apiUser.picture || '',
-      role: this.mapApiRoleToUserRole(apiUser.role)
+      role: this.mapApiRoleToUserRole(apiUser.role),
+      newsletterSubscribed: apiUser.newsletterSubscribed || false
     };
   }
 

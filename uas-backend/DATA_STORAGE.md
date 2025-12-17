@@ -31,10 +31,16 @@ All persistent business data is stored in the MySQL database:
 
 4. **Financial Data**
    - Invoices (student_id, amount, due_date, status, description)
+   - Student Fees (same as invoices, displayed in student-facing interface)
    - Payments (invoice_id, amount, method, status, transaction_id)
    - Department budgets (fiscal_year, total_budget, total_spent)
    - Budget categories and transactions
    - Payroll records (staff_id, gross_pay, allowances, deductions, net_pay)
+   
+   **Note:** Student fees are stored in the same `invoices` table as invoices. This ensures:
+   - Single source of truth for all invoice-related data
+   - Synchronization with invoice drafts
+   - Consistency between admin-created invoices and student-viewed fees
 
 5. **Department Data**
    - Department name, code, description

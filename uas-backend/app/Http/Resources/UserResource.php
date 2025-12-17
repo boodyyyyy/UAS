@@ -17,6 +17,7 @@ class UserResource extends JsonResource
             'role' => $this->role,
             'picture' => $this->picture,
             'isActive' => $this->is_active,
+            'newsletterSubscribed' => $this->newsletter_subscribed,
             'studentId' => $this->whenLoaded('student', fn() => $this->student->student_id),
             'employeeId' => $this->whenLoaded('staff', fn() => $this->staff->employee_id),
             'department' => $this->when(
