@@ -25,12 +25,22 @@ A comprehensive Angular-based frontend application for managing university accou
 
 ## Getting Started
 
+### Quick Setup
+
+**Windows Users:** Run the automated setup script:
+```bash
+cd uas-frontend
+setup.bat
+```
+
+**All Platforms:** See [SETUP.md](./SETUP.md) for detailed setup instructions.
+
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm (v10 or higher)
-- Angular CLI (v20 or higher)
+- Angular CLI (v21 or higher)
 
-### Installation
+### Quick Installation
 
 1. Navigate to the project directory:
 ```bash
@@ -42,12 +52,19 @@ cd uas-frontend
 npm install
 ```
 
-3. Start the development server:
+3. Configure environment (optional):
+   - Edit `src/environments/environment.ts`
+   - Update `apiUrl` if backend runs on different port
+   - Add chatbot API keys if needed
+
+4. Start the development server:
 ```bash
 npm start
 ```
 
-4. Open your browser and navigate to `http://localhost:4200`
+5. Open your browser and navigate to `http://localhost:4200`
+
+**Note:** Make sure the Laravel backend is running on `http://localhost:8000` before starting the frontend.
 
 ## Default Login Credentials
 
@@ -109,8 +126,10 @@ npm test
 
 ## Technologies Used
 
-- Angular 20
-- TypeScript
+- Angular 21
+- TypeScript 5.9
 - SCSS
 - ngx-charts (for data visualization)
 - ngx-cookie-service (for cookie management)
+- Chart.js (for charts and graphs)
+- RxJS (for reactive programming)
