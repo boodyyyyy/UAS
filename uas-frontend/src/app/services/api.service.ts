@@ -74,6 +74,43 @@ export class ApiService {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/invoices/${id}`);
   }
 
+  // ==================== DRAFT INVOICES (Server-Side Session) ====================
+  // These methods use server-side session storage (bonus requirement)
+  // Drafts are NOT stored in localStorage - only in server session
+
+  /**
+   * Save invoice draft to server-side session
+   * This demonstrates server-side session usage for milestone bonus
+   */
+  saveInvoiceDraft(draft: Partial<Invoice>): Observable<{ data: any; message: string }> {
+    return this.http.post<{ data: any; message: string }>(
+      `${this.apiUrl}/invoices/draft`,
+      { draft },
+      { withCredentials: true } // Required for session cookies
+    );
+  }
+
+  /**
+   * Get invoice draft from server-side session
+   */
+  getInvoiceDraft(): Observable<{ data: any | null; message: string }> {
+    return this.http.get<{ data: any | null; message: string }>(
+      `${this.apiUrl}/invoices/draft`,
+      { withCredentials: true } // Required for session cookies
+    );
+  }
+
+  /**
+   * Clear invoice draft from server-side session
+   * Called when invoice is finalized and saved to database
+   */
+  clearInvoiceDraft(): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(
+      `${this.apiUrl}/invoices/draft`,
+      { withCredentials: true } // Required for session cookies
+    );
+  }
+
   payInvoice(invoiceId: number, payment: {
     amount: number;
     method: PaymentMethod;

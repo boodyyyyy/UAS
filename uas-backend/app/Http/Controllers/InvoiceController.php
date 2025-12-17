@@ -159,4 +159,69 @@ class InvoiceController extends Controller
             'message' => 'Invoice deleted successfully'
         ], 200);
     }
+
+    // ==================== DRAFT INVOICE METHODS (Server-Side Session) ====================
+    // These methods demonstrate server-side session storage for milestone bonus requirement
+    // Draft invoices are stored in Laravel session, NOT in database or localStorage
+
+    /**
+     * Save invoice draft to server-side session
+     * This is for demonstrating server-side session usage (bonus requirement)
+     * Draft is NOT saved to database - only stored in session
+     */
+    public function saveDraft(Request $request): JsonResponse
+    {
+        $request->validate([
+            'draft' => 'required|array',
+            'draft.student_id' => 'nullable|integer|exists:students,id',
+            'draft.description' => 'nullable|string|max:255',
+            'draft.amount' => 'nullable|numeric|min:0',
+            'draft.issue_date' => 'nullable|date',
+            'draft.due_date' => 'nullable|date',
+            'draft.status' => 'nullable|string|in:pending,paid,overdue,cancelled',
+        ]);
+
+        // Store draft in server-side session
+        session(['invoice_draft' => $request->draft]);
+
+        return response()->json([
+            'data' => $request->draft,
+            'message' => 'Invoice draft saved to session successfully'
+        ], 200);
+    }
+
+    /**
+     * Retrieve invoice draft from server-side session
+     * Returns the draft if it exists in the session
+     */
+    public function getDraft(Request $request): JsonResponse
+    {
+        $draft = session('invoice_draft', null);
+
+        if ($draft === null) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No invoice draft found in session'
+            ], 200);
+        }
+
+        return response()->json([
+            'data' => $draft,
+            'message' => 'Invoice draft retrieved from session successfully'
+        ], 200);
+    }
+
+    /**
+     * Clear invoice draft from server-side session
+     * Called when invoice is finalized and saved to database
+     */
+    public function clearDraft(Request $request): JsonResponse
+    {
+        // Remove draft from session
+        session()->forget('invoice_draft');
+
+        return response()->json([
+            'message' => 'Invoice draft cleared from session successfully'
+        ], 200);
+    }
 }
