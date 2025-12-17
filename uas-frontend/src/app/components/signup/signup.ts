@@ -58,20 +58,13 @@ export class Signup {
       
       const formValue = this.signupForm.value;
       
-      // Map UserRole enum to API role string
-      const roleMap: { [key: string]: string } = {
-        [UserRole.ADMIN]: 'admin',
-        [UserRole.ACCOUNTING]: 'accounting',
-        [UserRole.STUDENT]: 'student'
-      };
-      
       const registerData = {
         username: formValue.username,
         name: formValue.name,
         email: formValue.email,
         password: formValue.password,
         password_confirmation: formValue.confirmPassword,
-        role: roleMap[formValue.role] || 'student',
+        role: formValue.role as UserRole,
         picture: formValue.picture || ''
       };
 

@@ -3,11 +3,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { UserService } from './user.service';
-import { User, UserRole } from '../models/user.model';
+import { UserService, User as UserServiceUser } from './user.service';
+import { UserRole } from '../models/user.model';
 
 export interface LoginResponse {
-  data: User;
+  data: any;
   meta: {
     token: string;
   };
@@ -15,7 +15,7 @@ export interface LoginResponse {
 }
 
 export interface RegisterResponse {
-  data: User;
+  data: any;
   meta: {
     token: string;
   };
@@ -49,7 +49,10 @@ export class AuthService {
     password: string;
     password_confirmation: string;
     role: UserRole;
+    picture?: string;
   }): Observable<RegisterResponse> {
+    // UserRole enum values are already strings ('admin', 'accounting', 'student')
+    // which match the backend API expectations, so we can send directly
     return this.http.post<RegisterResponse>(
       `${this.apiUrl}/auth/register`,
       userData,
@@ -200,15 +203,14 @@ export class AuthService {
   /**
    * Map API user response to local User interface
    */
-  private mapApiUserToLocalUser(apiUser: any): User {
+  private mapApiUserToLocalUser(apiUser: any): UserServiceUser {
     return {
       id: String(apiUser.id),
       username: apiUser.username,
       name: apiUser.name,
       email: apiUser.email,
       picture: apiUser.picture || '',
-      role: this.mapApiRoleToUserRole(apiUser.role),
-      isActive: apiUser.isActive
+      role: this.mapApiRoleToUserRole(apiUser.role)
     };
   }
 
