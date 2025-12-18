@@ -1093,3 +1093,97 @@
 #36 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\artisan(14): Illuminate\\Foundation\\Console\\Kernel->handle()
 #37 {main}
 "} 
+[2025-12-17 21:39:31] local.ERROR: array_merge(): Argument #2 must be of type array, int given {"exception":"[object] (TypeError(code: 0): array_merge(): Argument #2 must be of type array, int given at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php:95)
+[stacktrace]
+#0 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php(95): array_merge()
+#1 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php(55): Illuminate\\Foundation\\ProviderRepository->loadManifest()
+#2 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(871): Illuminate\\Foundation\\ProviderRepository->load()
+#3 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterProviders.php(37): Illuminate\\Foundation\\Application->registerConfiguredProviders()
+#4 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterProviders->bootstrap()
+#5 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(474): Illuminate\\Foundation\\Application->bootstrapWith()
+#6 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#7 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\artisan(14): Illuminate\\Foundation\\Console\\Kernel->handle()
+#8 {main}
+"} 
+[2025-12-17 21:39:45] local.ERROR: array_merge(): Argument #2 must be of type array, int given {"exception":"[object] (TypeError(code: 0): array_merge(): Argument #2 must be of type array, int given at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php:95)
+[stacktrace]
+#0 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php(95): array_merge()
+#1 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php(55): Illuminate\\Foundation\\ProviderRepository->loadManifest()
+#2 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(871): Illuminate\\Foundation\\ProviderRepository->load()
+#3 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterProviders.php(37): Illuminate\\Foundation\\Application->registerConfiguredProviders()
+#4 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterProviders->bootstrap()
+#5 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(474): Illuminate\\Foundation\\Application->bootstrapWith()
+#6 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#7 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\artisan(14): Illuminate\\Foundation\\Console\\Kernel->handle()
+#8 {main}
+"} 
+[2025-12-17 21:39:55] local.ERROR: array_merge(): Argument #2 must be of type array, int given {"exception":"[object] (TypeError(code: 0): array_merge(): Argument #2 must be of type array, int given at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php:95)
+[stacktrace]
+#0 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php(95): array_merge()
+#1 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\ProviderRepository.php(55): Illuminate\\Foundation\\ProviderRepository->loadManifest()
+#2 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(871): Illuminate\\Foundation\\ProviderRepository->load()
+#3 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterProviders.php(37): Illuminate\\Foundation\\Application->registerConfiguredProviders()
+#4 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterProviders->bootstrap()
+#5 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(474): Illuminate\\Foundation\\Application->bootstrapWith()
+#6 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(196): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#7 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\artisan(14): Illuminate\\Foundation\\Console\\Kernel->handle()
+#8 {main}
+"} 
+[2025-12-17 21:43:58] local.ERROR: View path not found. {"exception":"[object] (RuntimeException(code: 0): View path not found. at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\ViewClearCommand.php:59)
+[stacktrace]
+#0 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(36): Illuminate\\Foundation\\Console\\ViewClearCommand->handle()
+#1 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php(43): Illuminate\\Container\\BoundMethod::{closure:Illuminate\\Container\\BoundMethod::call():35}()
+#2 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(95): Illuminate\\Container\\Util::unwrapIfClosure()
+#3 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#4 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php(696): Illuminate\\Container\\BoundMethod::call()
+#5 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(213): Illuminate\\Container\\Container->call()
+#6 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\symfony\\console\\Command\\Command.php(341): Illuminate\\Console\\Command->execute()
+#7 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php(182): Symfony\\Component\\Console\\Command\\Command->run()
+#8 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\symfony\\console\\Application.php(1102): Illuminate\\Console\\Command->run()
+#9 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\symfony\\console\\Application.php(356): Symfony\\Component\\Console\\Application->doRunCommand()
+#10 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\symfony\\console\\Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#11 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#12 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\artisan(14): Illuminate\\Foundation\\Console\\Kernel->handle()
+#13 {main}
+"} 
+[2025-12-17 21:47:38] local.ERROR: Failed to send newsletter subscription email: Please provide a valid cache path.  
+[2025-12-17 23:12:03] local.ERROR: Cannot redeclare class Resend (previously declared in D:\Semester 5\Electives\Web Programming\Angular Project\Milestone 1\UAS\uas-backend\vendor\resend\resend-php\src\Resend.php:10) {"userId":15,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare class Resend (previously declared in D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10) at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2025-12-17 23:13:15] local.ERROR: Cannot redeclare class Resend (previously declared in D:\Semester 5\Electives\Web Programming\Angular Project\Milestone 1\UAS\uas-backend\vendor\resend\resend-php\src\Resend.php:10) {"userId":16,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare class Resend (previously declared in D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10) at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2025-12-17 23:17:39] local.ERROR: Cannot redeclare class Resend (previously declared in D:\Semester 5\Electives\Web Programming\Angular Project\Milestone 1\UAS\uas-backend\vendor\resend\resend-php\src\Resend.php:10) {"userId":19,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare class Resend (previously declared in D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10) at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2025-12-17 23:18:31] local.ERROR: Cannot redeclare class Resend (previously declared in D:\Semester 5\Electives\Web Programming\Angular Project\Milestone 1\UAS\uas-backend\vendor\resend\resend-php\src\Resend.php:10) {"userId":19,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare class Resend (previously declared in D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10) at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2025-12-17 23:24:08] local.ERROR: Cannot redeclare class Resend (previously declared in D:\Semester 5\Electives\Web Programming\Angular Project\Milestone 1\UAS\uas-backend\vendor\resend\resend-php\src\Resend.php:10) {"userId":20,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare class Resend (previously declared in D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10) at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2025-12-17 23:28:36] local.ERROR: Cannot redeclare class Resend (previously declared in D:\Semester 5\Electives\Web Programming\Angular Project\Milestone 1\UAS\uas-backend\vendor\resend\resend-php\src\Resend.php:10) {"userId":21,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare class Resend (previously declared in D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10) at D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\vendor\\resend\\resend-php\\src\\Resend.php:10)
+[stacktrace]
+#0 {main}
+"} 
+[2025-12-17 23:32:11] local.ERROR: Exception sending email via Resend HTTP API: cURL error 60: SSL certificate problem: unable to get local issuer certificate (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://api.resend.com/emails {"email":"jana.elgharib13@gmail.com"} 
+[2025-12-17 23:35:38] local.ERROR: Failed to send email via Resend API {"email":"jojo35raed@gmail.com","status":403,"response":"{\"statusCode\":403,\"message\":\"The uas.edu domain is not verified. Please, add and verify your domain on https://resend.com/domains\",\"name\":\"validation_error\"}"} 
+[2025-12-17 23:39:12] local.ERROR: Failed to send email via Resend API {"email":"jana.elgharib13@gmail.com","status":403,"response":"{\"statusCode\":403,\"message\":\"The uas.edu domain is not verified. Please, add and verify your domain on https://resend.com/domains\",\"name\":\"validation_error\"}"} 
+[2025-12-17 23:52:44] local.INFO: Newsletter welcome email sent successfully via Brevo API {"email":"jojo35raed@gmail.com","message_id":"<202512172352.15766368210@smtp-relay.mailin.fr>"} 
+[2025-12-18 00:01:42] local.INFO: Sending email via Brevo API {"to":"jana.elgharib13@gmail.com","from":"noreply@uas.edu","subject":"Welcome to Our Newsletter!"} 
+[2025-12-18 00:01:42] local.INFO: Brevo API Response {"status":201,"body":"{\"messageId\":\"<202512180001.87691609813@smtp-relay.mailin.fr>\"}
+"} 
+[2025-12-18 00:01:42] local.INFO: Newsletter welcome email sent successfully via Brevo API {"email":"jana.elgharib13@gmail.com","message_id":"<202512180001.87691609813@smtp-relay.mailin.fr>"} 
+[2025-12-18 00:07:46] local.INFO: Sending email via Brevo API {"to":"jana.elgharib13@gmail.com","from":"jojo35raed@gmail.com","subject":"Welcome to Our Newsletter!"} 
+[2025-12-18 00:07:47] local.INFO: Brevo API Response {"status":201,"body":"{\"messageId\":\"<202512180007.35745593389@smtp-relay.mailin.fr>\"}
+"} 
+[2025-12-18 00:07:47] local.INFO: Newsletter welcome email sent successfully via Brevo API {"email":"jana.elgharib13@gmail.com","message_id":"<202512180007.35745593389@smtp-relay.mailin.fr>"} 
+[2025-12-18 00:11:43] local.INFO: Sending email via Brevo API {"to":"jana.elgharib13@gmail.com","from":"jojo35raed@gmail.com","subject":"Welcome to Our Newsletter!"} 
+[2025-12-18 00:11:43] local.INFO: Brevo API Response {"status":201,"body":"{\"messageId\":\"<202512180011.48547418239@smtp-relay.mailin.fr>\"}
+"} 
+[2025-12-18 00:11:43] local.INFO: Newsletter welcome email sent successfully via Brevo API {"email":"jana.elgharib13@gmail.com","message_id":"<202512180011.48547418239@smtp-relay.mailin.fr>"} 

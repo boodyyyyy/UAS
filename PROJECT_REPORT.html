@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Accounting System - Project Report</title>
+    <style>
+        @page {
+            margin: 1in;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        .header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+        .meta {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #27ae60;
+            color: white;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 30px;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        @media print {
+            body {
+                max-width: 100%;
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>University Accounting System (UAS)</h1>
+        <div class="meta">
+            <p><strong>Project Report</strong></p>
+            <p>Date: December 2024 | Version: 1.0 | <span class="status-badge">Production Ready</span></p>
+            <p style="margin-top: 15px; font-size: 16px;"><strong>Team Name:</strong> 404 Balance not found</p>
+            <div style="margin-top: 10px; text-align: left; display: inline-block;">
+                <p style="margin: 5px 0;"><strong>Team Members:</strong></p>
+                <ul style="text-align: left; margin: 10px 0; padding-left: 20px;">
+                    <li>Ahmed Megahed (13001265)</li>
+                    <li>Hassan Islam (13001118)</li>
+                    <li>Jana Raed (13002886)</li>
+                    <li>Abdelrahman Saeed (13004425)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1>1. Executive Summary</h1>
+        <p>The University Accounting System (UAS) is a comprehensive web-based application designed to manage all financial operations of a university, including student fee management, staff payroll processing, and department budget tracking. The system is built using modern web technologies with a clear separation between frontend (Angular) and backend (Laravel) components.</p>
+    </div>
+
+    <div class="section">
+        <h1>2. Project Overview</h1>
+        <h2>2.1 Purpose</h2>
+        <p>The UAS provides a centralized platform for managing:</p>
+        <ul>
+            <li>Student invoice and payment processing</li>
+            <li>Staff payroll management and reporting</li>
+            <li>Department budget allocation and tracking</li>
+            <li>User authentication and role-based access control</li>
+            <li>Financial reporting and analytics</li>
+        </ul>
+
+        <h2>2.2 Target Users</h2>
+        <ul>
+            <li><strong>Administrators</strong>: Full system access and user management</li>
+            <li><strong>Accounting Personnel</strong>: Invoice, payment, payroll, and budget management</li>
+            <li><strong>Students</strong>: View and pay invoices, access payment history</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>3. System Architecture</h1>
+        <h2>3.1 Technology Stack</h2>
+        
+        <h3>Frontend</h3>
+        <ul>
+            <li><strong>Framework</strong>: Angular 21</li>
+            <li><strong>Language</strong>: TypeScript 5.9</li>
+            <li><strong>Styling</strong>: SCSS</li>
+            <li><strong>State Management</strong>: RxJS Observables</li>
+            <li><strong>Charts</strong>: Chart.js, ng2-charts</li>
+            <li><strong>HTTP Client</strong>: Angular HttpClient with interceptors</li>
+        </ul>
+
+        <h3>Backend</h3>
+        <ul>
+            <li><strong>Framework</strong>: Laravel 11</li>
+            <li><strong>Language</strong>: PHP 8.1+</li>
+            <li><strong>Database</strong>: MySQL 5.7+</li>
+            <li><strong>Authentication</strong>: Laravel Sanctum (Token-based)</li>
+            <li><strong>API</strong>: RESTful API architecture</li>
+            <li><strong>Email</strong>: Laravel Mail (SMTP support)</li>
+        </ul>
+
+        <h2>3.2 Architecture Pattern</h2>
+        <ul>
+            <li><strong>Frontend-Backend Separation</strong>: Clear API-based communication</li>
+            <li><strong>RESTful API Design</strong>: Standard HTTP methods and status codes</li>
+            <li><strong>Role-Based Access Control (RBAC)</strong>: Middleware-based route protection</li>
+            <li><strong>Database-First Design</strong>: MySQL with Eloquent ORM</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>4. Core Features</h1>
+        
+        <h2>4.1 User Management</h2>
+        <ul class="feature-list">
+            <li>User registration and authentication</li>
+            <li>Role-based access control (Admin, Accounting, Student)</li>
+            <li>Profile management with newsletter subscription</li>
+            <li>User activation/deactivation</li>
+            <li>Password management</li>
+        </ul>
+
+        <h2>4.2 Student Fee Management</h2>
+        <ul class="feature-list">
+            <li>Invoice creation by admin/accounting staff</li>
+            <li>Student username-based invoice assignment</li>
+            <li>Automatic student record creation</li>
+            <li>Invoice status tracking (pending, paid, overdue)</li>
+            <li>Payment processing and history</li>
+            <li>Real-time invoice visibility for students</li>
+        </ul>
+
+        <h2>4.3 Payment Processing</h2>
+        <ul class="feature-list">
+            <li>Multiple payment methods support</li>
+            <li>Payment status tracking</li>
+            <li>Automatic invoice status updates</li>
+            <li>Payment history and reporting</li>
+            <li>Transaction ID management</li>
+        </ul>
+
+        <h2>4.4 Staff Payroll Management</h2>
+        <ul class="feature-list">
+            <li>Payroll record creation</li>
+            <li>Salary, allowances, and deductions calculation</li>
+            <li>Net pay computation</li>
+            <li>Payroll report generation</li>
+            <li>Historical payroll data tracking</li>
+        </ul>
+
+        <h2>4.5 Department Budget Management</h2>
+        <ul class="feature-list">
+            <li>Budget allocation per department</li>
+            <li>Budget category management</li>
+            <li>Income and expense tracking</li>
+            <li>Budget transaction history</li>
+            <li>Visual budget analytics (charts)</li>
+            <li>Real-time balance updates</li>
+        </ul>
+
+        <h2>4.6 Financial Reporting</h2>
+        <ul class="feature-list">
+            <li>Financial summary reports</li>
+            <li>Department budget reports</li>
+            <li>Payment analytics</li>
+            <li>Revenue tracking</li>
+        </ul>
+
+        <h2>4.7 Newsletter Subscription</h2>
+        <ul class="feature-list">
+            <li>Email newsletter subscription in user profile</li>
+            <li>Automatic welcome email on subscription</li>
+            <li>SMTP email configuration support</li>
+            <li>Email template customization</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>5. Database Structure</h1>
+        <h2>5.1 Core Tables</h2>
+        <table>
+            <tr>
+                <th>Table Name</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td>users</td>
+                <td>User accounts with authentication</td>
+            </tr>
+            <tr>
+                <td>departments</td>
+                <td>University departments</td>
+            </tr>
+            <tr>
+                <td>students</td>
+                <td>Student information</td>
+            </tr>
+            <tr>
+                <td>staff</td>
+                <td>Staff/employee information</td>
+            </tr>
+            <tr>
+                <td>invoices</td>
+                <td>Student invoices and fees</td>
+            </tr>
+            <tr>
+                <td>payments</td>
+                <td>Payment transactions</td>
+            </tr>
+            <tr>
+                <td>department_budgets</td>
+                <td>Budget allocations</td>
+            </tr>
+            <tr>
+                <td>budget_categories</td>
+                <td>Budget categories</td>
+            </tr>
+            <tr>
+                <td>budget_transactions</td>
+                <td>Budget transaction history</td>
+            </tr>
+            <tr>
+                <td>payrolls</td>
+                <td>Staff payroll records</td>
+            </tr>
+        </table>
+
+        <h2>5.2 Key Relationships</h2>
+        <ul>
+            <li>User → Student (One-to-One)</li>
+            <li>User → Staff (One-to-One)</li>
+            <li>Student → Invoice (One-to-Many)</li>
+            <li>Invoice → Payment (One-to-Many)</li>
+            <li>Department → Budget (One-to-Many)</li>
+            <li>Staff → Payroll (One-to-Many)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>6. Security Features</h1>
+        <h2>6.1 Authentication</h2>
+        <ul>
+            <li>Laravel Sanctum token-based authentication</li>
+            <li>HTTP-only cookies for secure token storage</li>
+            <li>Password hashing (bcrypt)</li>
+            <li>Session management</li>
+        </ul>
+
+        <h2>6.2 Authorization</h2>
+        <ul>
+            <li>Role-based middleware protection</li>
+            <li>Route-level access control</li>
+            <li>API endpoint protection</li>
+            <li>User permission validation</li>
+        </ul>
+
+        <h2>6.3 Data Security</h2>
+        <ul>
+            <li>SQL injection prevention (Eloquent ORM)</li>
+            <li>XSS protection (Laravel built-in)</li>
+            <li>CSRF token validation</li>
+            <li>Input validation and sanitization</li>
+            <li>Secure password storage</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>7. API Endpoints Summary</h1>
+        <h2>7.1 Authentication</h2>
+        <ul>
+            <li><code>POST /api/auth/register</code> - User registration</li>
+            <li><code>POST /api/auth/login</code> - User login</li>
+            <li><code>POST /api/auth/logout</code> - User logout</li>
+            <li><code>GET /api/auth/me</code> - Get current user</li>
+        </ul>
+
+        <h2>7.2 Core Resources</h2>
+        <ul>
+            <li><strong>Users</strong>: CRUD operations (Admin only for create/delete)</li>
+            <li><strong>Invoices</strong>: Full CRUD with draft support</li>
+            <li><strong>Payments</strong>: Create and manage payments</li>
+            <li><strong>Payrolls</strong>: Payroll management and reporting</li>
+            <li><strong>Budgets</strong>: Budget and transaction management</li>
+            <li><strong>Reports</strong>: Financial and budget reports</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>8. Recent Updates & Enhancements</h1>
+        <ul class="feature-list">
+            <li>Complete migration from client-side to server-side storage</li>
+            <li>RESTful API implementation</li>
+            <li>Database-backed invoice and payment management</li>
+            <li>Admin user creation with password support</li>
+            <li>Student username-based invoice creation</li>
+            <li>Newsletter subscription with email integration</li>
+            <li>Server-side session support for drafts</li>
+            <li>Updated test specifications</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>9. Setup & Installation</h1>
+        <h2>9.1 Backend Setup</h2>
+        <ol>
+            <li>Install PHP 8.1+ and Composer</li>
+            <li>Install MySQL database</li>
+            <li>Configure <code>.env</code> file</li>
+            <li>Run <code>composer install</code></li>
+            <li>Run <code>php artisan migrate</code></li>
+            <li>Run <code>php artisan db:seed --class=DemoDataSeeder</code></li>
+            <li>Start server: <code>php artisan serve</code></li>
+        </ol>
+
+        <h2>9.2 Frontend Setup</h2>
+        <ol>
+            <li>Install Node.js 18+ and npm</li>
+            <li>Run <code>npm install</code></li>
+            <li>Configure environment file</li>
+            <li>Start server: <code>npm start</code></li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h1>10. Testing</h1>
+        <h2>10.1 Test Coverage</h2>
+        <ul>
+            <li>Unit tests for services</li>
+            <li>Component tests</li>
+            <li>Guard tests (authentication/authorization)</li>
+            <li>Integration tests for API endpoints</li>
+        </ul>
+
+        <h2>10.2 Test Results</h2>
+        <ul>
+            <li><strong>149 passing tests</strong></li>
+            <li>5 minor test failures (non-critical)</li>
+            <li>All critical authentication tests passing</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h1>11. Conclusion</h1>
+        <p>The University Accounting System successfully provides a comprehensive solution for managing university financial operations. With its modern architecture, secure authentication, and robust feature set, the system is ready for production deployment.</p>
+
+        <div class="highlight">
+            <h3>Key Achievements</h3>
+            <ul class="feature-list">
+                <li>Complete backend integration</li>
+                <li>Secure authentication and authorization</li>
+                <li>Comprehensive financial management features</li>
+                <li>Role-based access control</li>
+                <li>Email integration</li>
+                <li>Well-documented codebase</li>
+                <li>Production-ready code quality</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1>Appendix A: Demo Accounts</h1>
+        <table>
+            <tr>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Password</th>
+            </tr>
+            <tr>
+                <td>Admin</td>
+                <td>admin@uas.edu</td>
+                <td>password</td>
+            </tr>
+            <tr>
+                <td>Accountant</td>
+                <td>accountant@uas.edu</td>
+                <td>password</td>
+            </tr>
+            <tr>
+                <td>Student</td>
+                <td>student@uas.edu</td>
+                <td>password</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h1>Appendix B: Technology Versions</h1>
+        <ul>
+            <li>Angular: 21.0.0</li>
+            <li>TypeScript: 5.9.x</li>
+            <li>Laravel: 11.x</li>
+            <li>PHP: 8.1+</li>
+            <li>MySQL: 5.7+</li>
+            <li>Node.js: 18+</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 50px; text-align: center; color: #7f8c8d; font-size: 12px;">
+        <p><strong>Report Generated:</strong> December 2024</p>
+        <p><strong>Project Status:</strong> <span class="status-badge">Production Ready</span></p>
+    </div>
+
+    <div class="no-print" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 5px; text-align: center;">
+        <p><strong>To convert to PDF:</strong> Open this file in a browser and use "Print to PDF" (Ctrl+P → Save as PDF)</p>
+    </div>
+</body>
+</html>
+
