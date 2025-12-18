@@ -7,11 +7,10 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Mail\NewsletterSubscriptionMail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -131,19 +130,44 @@ class UserController extends Controller
         $user->load(['student', 'staff']);
 
         // Send welcome email if user just subscribed
+        // Email sending is optional - if it fails, the user update still succeeds
+        $emailSent = false;
         if (!$wasSubscribed && $user->newsletter_subscribed) {
-            try {
-                Mail::to($user->email)->send(new NewsletterSubscriptionMail($user));
-            } catch (\Exception $e) {
-                // Log error but don't fail the request
-                \Log::error('Failed to send newsletter subscription email: ' . $e->getMessage());
-            }
+            $emailSent = $this->sendNewsletterEmail($user);
+        }
+
+        $message = 'User updated successfully';
+        if ($emailSent) {
+            $message .= '. Welcome email sent!';
         }
 
         return response()->json([
             'data' => new UserResource($user),
-            'message' => 'User updated successfully' . ($user->newsletter_subscribed && !$wasSubscribed ? '. Welcome email sent!' : '')
+            'message' => $message
         ], 200);
+    }
+
+    /**
+     * Send newsletter welcome email (with error handling)
+     */
+    private function sendNewsletterEmail(User $user): bool
+    {
+        // Check if BrevoEmailService class exists and can be loaded
+        if (!class_exists(\App\Services\BrevoEmailService::class)) {
+            Log::warning('BrevoEmailService class not found. Email sending disabled.');
+            return false;
+        }
+
+        try {
+            $emailService = app(\App\Services\BrevoEmailService::class);
+            return $emailService->sendNewsletterWelcome($user);
+        } catch (\Throwable $e) {
+            // Catch all errors
+            Log::error('Error sending newsletter subscription email: ' . $e->getMessage(), [
+                'exception' => get_class($e)
+            ]);
+            return false;
+        }
     }
 
     /**
