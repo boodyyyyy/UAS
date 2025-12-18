@@ -24,7 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     // Skip adding token to public endpoints
-    const publicEndpoints = ['/auth/login', '/auth/register', '/health'];
+    const publicEndpoints = ['/auth/login', '/auth/register', '/auth/logout', '/health'];
     const isPublicEndpoint = publicEndpoints.some(endpoint => 
       request.url.includes(endpoint)
     );
@@ -51,16 +51,12 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(clonedRequest).pipe(
       catchError((error: HttpErrorResponse) => {
         // Handle 401 Unauthorized
-        if (error.status === 401) {
-          // Token expired or invalid
-          this.authService.logout().subscribe({
-            next: () => {
-              this.router.navigate(['/login']);
-            },
-            error: () => {
-              this.router.navigate(['/login']);
-            }
-          });
+        // Skip handling if this is already a logout request to prevent infinite loop
+        if (error.status === 401 && !request.url.includes('/auth/logout')) {
+          // Token expired or invalid - clear local state and redirect
+          // Don't call logout API to avoid infinite loop
+          this.authService.handleLogout();
+          this.router.navigate(['/login']);
         }
 
         // Handle 403 Forbidden
