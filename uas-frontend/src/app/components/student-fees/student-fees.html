@@ -17,23 +17,33 @@
     }
   </div>
   
+  @if (showSuccessMessage) {
+    <div class="alert alert-success" style="margin-bottom: 1rem; padding: 1rem; background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">
+      <strong>Success!</strong> {{ successMessage }}
+      <button type="button" style="float: right; background: none; border: none; color: #155724; font-size: 1.2rem; cursor: pointer;" (click)="showSuccessMessage = false; successMessage = ''">×</button>
+    </div>
+  }
+  
   @if (showCreateForm && canCreateInvoice) {
     <div class="card">
       <h2>Create New Invoice</h2>
       <form [formGroup]="feeForm" (ngSubmit)="createFee()">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Student ID</label>
-            <input type="text" formControlName="studentId" />
-          </div>
-          <div class="form-group">
-            <label>Student Name</label>
-            <input type="text" formControlName="studentName" />
-          </div>
+        <div class="form-group">
+          <label>Student Username</label>
+          <input type="text" formControlName="studentUsername" placeholder="Enter student username" />
+          @if (feeForm.get('studentUsername')?.invalid && feeForm.get('studentUsername')?.touched) {
+            <div class="error-message">Student username is required</div>
+          }
+          <small style="color: var(--text-secondary); margin-top: 0.25rem; display: block;">
+            Enter the username of the student (e.g., "student", "john_doe")
+          </small>
         </div>
         <div class="form-group">
           <label>Description</label>
           <input type="text" formControlName="description" />
+          @if (feeForm.get('description')?.invalid && feeForm.get('description')?.touched) {
+            <div class="error-message">Description is required</div>
+          }
         </div>
         <div class="form-row">
           <div class="form-group">

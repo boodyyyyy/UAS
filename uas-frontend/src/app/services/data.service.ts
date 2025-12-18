@@ -289,10 +289,29 @@ export class DataService {
     };
   }
 
-  // Student Fees methods
+  // Student Fees methods - Using API for database-backed invoices
   getStudentFees(): Observable<StudentFee[]> {
-    const fees = this.storage.getLocalStorage<StudentFee[]>(this.STUDENT_FEES_KEY) || [];
-    return of(fees);
+    // Use API to get invoices from database (student-fees endpoint returns invoices)
+    return this.apiService.getStudentFees().pipe(
+      map(response => {
+        // Transform Invoice[] to StudentFee[] format
+        // The API returns invoices with camelCase properties from InvoiceResource
+        return response.data.map((invoice: any) => ({
+          id: invoice.id?.toString() || invoice.invoiceId || '',
+          studentId: invoice.studentId?.toString() || '',
+          studentName: invoice.studentName || '',
+          description: invoice.description || '',
+          amount: invoice.amount || 0,
+          dueDate: invoice.dueDate ? new Date(invoice.dueDate) : new Date(),
+          status: (invoice.status || 'pending') as 'pending' | 'paid' | 'overdue',
+          createdAt: invoice.createdAt ? new Date(invoice.createdAt) : new Date()
+        }));
+      }),
+      catchError(error => {
+        console.error('Failed to get student fees from server', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   createStudentFee(fee: Omit<StudentFee, 'id' | 'createdAt'>): Observable<StudentFee> {

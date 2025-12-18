@@ -4,6 +4,8 @@
 
 The invoice storage has been migrated from **client-side localStorage** to **server-side database**. Invoices are now stored in MySQL database on the server instead of browser localStorage.
 
+**Additionally, Student Fees have also been migrated to server-side storage** to maintain consistency with invoices and ensure proper synchronization with invoice drafts. Student fees are essentially invoices displayed in the student-facing interface, so they share the same database storage for data integrity.
+
 ---
 
 ## What Changed
@@ -35,8 +37,43 @@ The invoice storage has been migrated from **client-side localStorage** to **ser
    - `getInvoices()` - Now fetches from server database instead of localStorage
    - `createInvoice()` - Now stores in server database instead of localStorage
    - `updateInvoiceStatus()` - Now updates server database instead of localStorage
+   - `getStudentFees()` - Now fetches from server database via `/api/student-fees` endpoint
    - **Removed:** All localStorage invoice storage code
    - **Removed:** Sample data initialization for invoices
+   - **Note:** Student fees now use the same database storage as invoices for consistency
+
+---
+
+## Why Student Fees Were Migrated to Server-Side
+
+Student fees were migrated from localStorage to server-side database storage for the following reasons:
+
+### 1. **Synchronization with Invoice Drafts**
+- Invoice drafts are stored in server-side sessions (bonus requirement)
+- When drafts are finalized, they become invoices in the database
+- Student fees must reflect the same data as invoices to maintain consistency
+- Using the same database storage ensures draft → invoice → student fee flow is seamless
+
+### 2. **Single Source of Truth**
+- **Before:** Invoices in database, student fees in localStorage (data duplication)
+- **After:** Both invoices and student fees use the same `invoices` table
+- **Result:** No data inconsistencies or synchronization issues
+
+### 3. **Real-Time Updates**
+- When an admin creates an invoice, students immediately see it in their fees
+- No need to sync between localStorage and database
+- Changes to invoice status are instantly reflected in student view
+
+### 4. **Data Integrity**
+- Database constraints ensure data validity
+- Foreign key relationships maintain referential integrity
+- Transaction support prevents partial updates
+
+### 5. **Consistency with Invoice Drafts**
+- Invoice drafts use server-side sessions (temporary storage)
+- Finalized invoices use server-side database (permanent storage)
+- Student fees use the same database as finalized invoices
+- This creates a clear flow: **Draft (session) → Invoice (database) → Student Fee (same database)**
 
 ---
 
@@ -66,6 +103,12 @@ The invoice storage has been migrated from **client-side localStorage** to **ser
 - **MySQL Database:** `invoices` table
 - **Permanent storage:** Data persists across sessions
 - **Relationships:** Linked to students, payments, etc.
+
+**Student Fees:**
+- **Same Database Table:** Student fees are stored in the same `invoices` table
+- **API Endpoint:** `/api/student-fees` - Returns invoices filtered by student role
+- **Consistency:** Student fees and invoices share the same data source, ensuring synchronization
+- **Rationale:** This was done to sync with invoice drafts and maintain a single source of truth for all invoice-related data
 
 ---
 
@@ -187,6 +230,44 @@ Authorization: Bearer {token}
 Cookie: {auth_cookie}
 ```
 
+### Get Student Fees (Server-Side)
+```http
+GET /api/student-fees?status=pending&per_page=15
+Authorization: Bearer {token}
+Cookie: {auth_cookie}
+
+Response:
+{
+  "data": [
+    {
+      "id": 1,
+      "invoiceId": "INV-2024-001",
+      "studentId": 3,
+      "studentName": "Alex Johnson",
+      "description": "Fall 2024 Tuition",
+      "amount": 12500,
+      "issueDate": "2024-07-15",
+      "dueDate": "2024-08-15",
+      "status": "pending",
+      "createdAt": "2024-07-15T00:00:00.000000Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 1,
+    "per_page": 15,
+    "total": 1
+  },
+  "message": "Student fees retrieved successfully"
+}
+```
+
+**Note:** Student fees are retrieved from the same `invoices` table in the database. The `/api/student-fees` endpoint filters invoices based on the authenticated user's role:
+- **Students:** See only their own invoices
+- **Admins/Accountants:** See all invoices (same as `/api/invoices`)
+
+This ensures that student fees are always synchronized with the main invoice data, including invoice drafts.
+
 ---
 
 ## Frontend Usage
@@ -208,6 +289,12 @@ this.dataService.getInvoices().subscribe(invoices => {
 this.dataService.createInvoice(newInvoice).subscribe(invoice => {
   // invoice stored in server database (permanent)
 });
+
+// Student fees also use server database
+this.dataService.getStudentFees().subscribe(fees => {
+  // fees come from server database (same invoices table)
+  // This ensures consistency with invoice drafts and main invoices
+});
 ```
 
 ---
@@ -222,6 +309,11 @@ this.dataService.createInvoice(newInvoice).subscribe(invoice => {
 6. **Scalability:** Database can handle large amounts of data efficiently
 7. **Backup & Recovery:** Database backups protect against data loss
 8. **Multi-User:** Multiple users can access invoices simultaneously
+9. **Student Fees Synchronization:** Student fees use the same database storage as invoices, ensuring:
+   - **Single Source of Truth:** No data duplication or inconsistency
+   - **Invoice Draft Sync:** Draft invoices and finalized invoices share the same data structure
+   - **Real-time Updates:** Changes to invoices are immediately reflected in student fees view
+   - **Consistency:** Students see the same invoice data that admins create and manage
 
 ---
 
@@ -270,11 +362,15 @@ cat storage/framework/sessions/[session_id]
 
 ## Migration Notes
 
-- **Old localStorage data:** Still exists but is no longer used for invoices
-- **No backward compatibility:** Frontend now exclusively uses database API
+- **Old localStorage data:** Still exists but is no longer used for invoices or student fees
+- **No backward compatibility:** Frontend now exclusively uses database API for both invoices and student fees
 - **No data migration needed:** New invoices go to database, old localStorage data remains unused
 - **Permanent storage:** Invoices in database persist indefinitely (until deleted)
 - **Database required:** Backend must have MySQL database running and migrations executed
+- **Student Fees Migration:** Student fees were migrated to server-side storage to:
+  - **Sync with Invoice Drafts:** Ensure draft invoices and finalized invoices use the same data structure
+  - **Maintain Consistency:** Single source of truth for all invoice-related data
+  - **Improve Data Integrity:** Prevent discrepancies between admin-created invoices and student-viewed fees
 
 ---
 
@@ -306,5 +402,6 @@ cat storage/framework/sessions/[session_id]
 ---
 
 **Last Updated:** December 2024  
-**Status:** ✅ Migrated from localStorage to server-side database (MySQL)
+**Status:** ✅ Migrated from localStorage to server-side database (MySQL)  
+**Student Fees:** ✅ Also migrated to server-side storage for consistency with invoices and invoice drafts
 

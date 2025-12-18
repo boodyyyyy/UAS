@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use App\Models\Student;
+use App\Models\User;
+use App\Models\Department;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -97,12 +99,88 @@ class InvoiceController extends Controller
      */
     public function store(StoreInvoiceRequest $request): JsonResponse
     {
+        // Get student_id from either direct input or by looking up username
+        $studentId = $request->student_id;
+        
+        if (!$studentId && $request->student_username) {
+            // Trim whitespace from username
+            $username = trim($request->student_username);
+            
+            if (empty($username)) {
+                return response()->json([
+                    'message' => 'Student username cannot be empty.'
+                ], 422);
+            }
+            
+            // Look up student by username (case-insensitive search)
+            $user = User::whereRaw('LOWER(username) = ?', [strtolower($username)])
+                ->where('role', 'student')
+                ->first();
+            
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Student not found with username: "' . $username . '". Please check the username and try again.'
+                ], 404);
+            }
+            
+            // Load the student relationship
+            $user->load('student');
+            
+            if (!$user->student) {
+                // Auto-create student record if it doesn't exist
+                // Get the first available department (or create a default one)
+                $department = Department::first();
+                
+                if (!$department) {
+                    // If no departments exist, create a default one
+                    $department = Department::create([
+                        'name' => 'General',
+                        'code' => 'GEN',
+                        'description' => 'General Department',
+                    ]);
+                }
+                
+                // Generate a unique student_id based on username and user ID
+                $studentIdValue = 'STU-' . strtoupper(substr($username, 0, 3)) . '-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
+                
+                // Ensure uniqueness
+                $counter = 1;
+                while (Student::where('student_id', $studentIdValue)->exists()) {
+                    $studentIdValue = 'STU-' . strtoupper(substr($username, 0, 3)) . '-' . str_pad($user->id, 4, '0', STR_PAD_LEFT) . '-' . $counter;
+                    $counter++;
+                }
+                
+                // Create the student record
+                $student = Student::create([
+                    'user_id' => $user->id,
+                    'student_id' => $studentIdValue,
+                    'department_id' => $department->id,
+                    'status' => 'active',
+                    'enrollment_date' => Carbon::now(),
+                ]);
+                
+                // Refresh the user's student relationship
+                $user->refresh();
+                $user->load('student');
+                
+                $studentId = $student->id;
+            } else {
+                $studentId = $user->student->id;
+            }
+        }
+        
+        if (!$studentId) {
+            return response()->json([
+                'message' => 'Student ID or username is required.'
+            ], 422);
+        }
+
         // Generate unique invoice ID
         $invoiceId = 'INV-' . date('Y') . '-' . str_pad(Invoice::count() + 1, 3, '0', STR_PAD_LEFT);
 
         $invoice = Invoice::create([
             'invoice_id' => $invoiceId,
-            'student_id' => $request->student_id,
+            'student_id' => $studentId,
             'description' => $request->description,
             'amount' => $request->amount,
             'issue_date' => $request->issue_date,

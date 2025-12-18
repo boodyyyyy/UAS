@@ -2,8 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DataService } from '../../services/data.service';
+import { ApiService } from '../../services/api.service';
 import { UserService } from '../../services/user.service';
 import { UserRole } from '../../models/user.model';
+import { InvoiceStatus } from '../../models/invoice.model';
 import { StudentFee } from '../../models/student-fee.model';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -30,6 +32,8 @@ export class StudentFees implements OnInit {
   feeForm: FormGroup;
   currentUser: any = {};
   userRole: UserRole = UserRole.STUDENT;
+  successMessage: string = '';
+  showSuccessMessage: boolean = false;
   
   get isStudent(): boolean {
     return this.userRole === UserRole.STUDENT;
@@ -128,12 +132,12 @@ export class StudentFees implements OnInit {
 
   constructor(
     private dataService: DataService,
+    private apiService: ApiService,
     private userService: UserService,
     private fb: FormBuilder
   ) {
     this.feeForm = this.fb.group({
-      studentId: ['', [Validators.required]],
-      studentName: ['', [Validators.required]],
+      studentUsername: ['', [Validators.required]], // Changed from studentId to username
       description: ['', [Validators.required]],
       amount: [0, [Validators.required, Validators.min(0.01)]],
       dueDate: ['', [Validators.required]]
@@ -277,18 +281,40 @@ export class StudentFees implements OnInit {
       
       // Determine status based on due date
       // If due date is in the past, mark as overdue, otherwise pending
-      const status = dueDate < today ? 'overdue' as const : 'pending' as const;
+      const status = dueDate < today ? InvoiceStatus.OVERDUE : InvoiceStatus.PENDING;
       
-      const feeData = {
-        ...this.feeForm.value,
+      // Create invoice using API with username instead of student ID
+      const invoiceData = {
+        student_username: this.feeForm.value.studentUsername,
+        description: this.feeForm.value.description,
+        amount: this.feeForm.value.amount,
+        issue_date: today.toISOString().split('T')[0],
+        due_date: dueDate.toISOString().split('T')[0],
         status: status
       };
       
-      this.dataService.createStudentFee(feeData).subscribe(() => {
-        this.loadFees();
-        this.feeForm.reset();
-        this.showCreateForm = false;
-        // Charts will update automatically via loadFees -> updateCharts
+      this.apiService.createInvoice(invoiceData).subscribe({
+        next: (response) => {
+          // Show success message
+          this.successMessage = `Invoice created successfully for student "${this.feeForm.value.studentUsername}"!`;
+          this.showSuccessMessage = true;
+          
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            this.showSuccessMessage = false;
+            this.successMessage = '';
+          }, 5000);
+          
+          // Reload fees and reset form
+          this.loadFees();
+          this.feeForm.reset();
+          this.showCreateForm = false;
+          // Charts will update automatically via loadFees -> updateCharts
+        },
+        error: (error) => {
+          console.error('Error creating invoice:', error);
+          alert(error.error?.message || 'Failed to create invoice');
+        }
       });
     }
   }

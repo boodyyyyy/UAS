@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -119,13 +120,54 @@ class UserController extends Controller
             }
         }
 
+        // Handle newsletter subscription
+        $wasSubscribed = $user->newsletter_subscribed;
+        if ($request->has('newsletter_subscribed')) {
+            $updateData['newsletter_subscribed'] = $request->boolean('newsletter_subscribed');
+        }
+
         $user->update($updateData);
         $user->load(['student', 'staff']);
 
+        // Send welcome email if user just subscribed
+        // Email sending is optional - if it fails, the user update still succeeds
+        $emailSent = false;
+        if (!$wasSubscribed && $user->newsletter_subscribed) {
+            $emailSent = $this->sendNewsletterEmail($user);
+        }
+
+        $message = 'User updated successfully';
+        if ($emailSent) {
+            $message .= '. Welcome email sent!';
+        }
+
         return response()->json([
             'data' => new UserResource($user),
-            'message' => 'User updated successfully'
+            'message' => $message
         ], 200);
+    }
+
+    /**
+     * Send newsletter welcome email (with error handling)
+     */
+    private function sendNewsletterEmail(User $user): bool
+    {
+        // Check if BrevoEmailService class exists and can be loaded
+        if (!class_exists(\App\Services\BrevoEmailService::class)) {
+            Log::warning('BrevoEmailService class not found. Email sending disabled.');
+            return false;
+        }
+
+        try {
+            $emailService = app(\App\Services\BrevoEmailService::class);
+            return $emailService->sendNewsletterWelcome($user);
+        } catch (\Throwable $e) {
+            // Catch all errors
+            Log::error('Error sending newsletter subscription email: ' . $e->getMessage(), [
+                'exception' => get_class($e)
+            ]);
+            return false;
+        }
     }
 
     /**
