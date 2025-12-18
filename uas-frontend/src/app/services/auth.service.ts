@@ -169,9 +169,10 @@ export class AuthService {
   }
 
   /**
-   * Handle logout
+   * Handle logout (clear local state without API call)
+   * Made public so interceptor can call it to avoid infinite loops
    */
-  private handleLogout(): void {
+  handleLogout(): void {
     // Clear token
     localStorage.removeItem('auth_token');
     sessionStorage.removeItem('currentUserId');

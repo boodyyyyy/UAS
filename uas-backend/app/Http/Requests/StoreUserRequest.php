@@ -19,7 +19,7 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,accounting,student',
-            'picture' => 'nullable|string|max:255',
+            'picture' => 'nullable|string|max:10485760', // ~10MB for base64 images
         ];
     }
 }

@@ -109,7 +109,12 @@ class UserController extends Controller
         $currentUser = $request->user();
 
         // Only admin can change role and is_active
-        $updateData = $request->only(['name', 'email', 'picture']);
+        $updateData = $request->only(['name', 'email']);
+        
+        // Handle picture separately to ensure it's included even if empty string
+        if ($request->has('picture')) {
+            $updateData['picture'] = $request->input('picture');
+        }
         
         if ($currentUser->isAdmin()) {
             if ($request->has('role')) {
