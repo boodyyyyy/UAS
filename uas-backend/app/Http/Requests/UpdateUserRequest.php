@@ -22,7 +22,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|max:255|unique:users,email,' . $userId,
-            'picture' => 'nullable|string|max:255',
+            'picture' => 'nullable|string|max:10485760', // ~10MB for base64 images
             'role' => 'sometimes|in:admin,accounting,student',
             'is_active' => 'sometimes|boolean',
             'newsletter_subscribed' => 'sometimes|boolean',
