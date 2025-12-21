@@ -320,9 +320,15 @@ export class StudentFees implements OnInit {
   }
 
   markAsPaid(fee: StudentFee) {
-    this.dataService.updateStudentFeeStatus(fee.id, 'paid', new Date()).subscribe(() => {
-      this.loadFees();
-      // Charts will update automatically via loadFees -> updateCharts
+    this.dataService.updateStudentFeeStatus(fee.id, 'paid', new Date()).subscribe({
+      next: () => {
+        this.loadFees();
+        // Charts will update automatically via loadFees -> updateCharts
+      },
+      error: (error) => {
+        console.error('Error marking fee as paid:', error);
+        alert(error.error?.message || 'Failed to mark fee as paid. Please try again.');
+      }
     });
   }
 }

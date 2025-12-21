@@ -86,6 +86,8 @@ class StudentFeeController extends Controller
 
     /**
      * Update student fee status
+     * Students can only update their own invoices
+     * Admin and accounting can update any invoice
      */
     public function updateStatus(Request $request, $id): JsonResponse
     {
@@ -94,11 +96,28 @@ class StudentFeeController extends Controller
             'payment_date' => 'nullable|date',
         ]);
 
+        $user = $request->user();
         $invoice = Invoice::findOrFail($id);
+
+        // Students can only update their own invoices
+        if ($user->isStudent() && $user->student) {
+            if ($invoice->student_id !== $user->student->id) {
+                return response()->json([
+                    'message' => 'You can only update your own invoices'
+                ], 403);
+            }
+        }
 
         // Map status
         $invoiceStatus = $validator['status'] === 'paid' ? 'paid' : ($validator['status'] === 'overdue' ? 'overdue' : 'pending');
-        $invoice->update(['status' => $invoiceStatus]);
+        
+        // Update status and payment date if provided
+        $updateData = ['status' => $invoiceStatus];
+        if (isset($validator['payment_date'])) {
+            $updateData['payment_date'] = Carbon::parse($validator['payment_date']);
+        }
+        
+        $invoice->update($updateData);
 
         $invoice->load(['student.user', 'payments']);
 

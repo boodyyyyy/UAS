@@ -38,7 +38,10 @@ export class AuthService {
     private logRocketService: LogRocketService
   ) {
     // Check authentication status on service initialization
-    this.checkAuthStatus();
+    // Use setTimeout to avoid interfering with initial page load
+    setTimeout(() => {
+      this.checkAuthStatus();
+    }, 0);
   }
 
   /**
@@ -132,7 +135,8 @@ export class AuthService {
         }
       }),
       catchError(error => {
-        this.handleLogout();
+        // Only clear auth state, don't redirect if already on login page
+        this.clearAuthState();
         return throwError(() => error);
       })
     );
@@ -149,13 +153,20 @@ export class AuthService {
    * Check authentication status on app load
    */
   private checkAuthStatus(): void {
+    // Don't check auth status if we're on login or register page
+    const currentUrl = this.router.url;
+    if (currentUrl.includes('/login') || currentUrl.includes('/register') || currentUrl.includes('/signup')) {
+      this.isAuthenticatedSubject.next(false);
+      return;
+    }
+
     const token = this.getToken();
     if (token) {
       // Verify token is still valid by fetching current user
       this.getCurrentUser().subscribe({
         error: () => {
-          // Token invalid, clear auth state
-          this.handleLogout();
+          // Token invalid, clear auth state (but don't redirect if already on login page)
+          this.clearAuthState();
         }
       });
     } else {
@@ -189,10 +200,9 @@ export class AuthService {
   }
 
   /**
-   * Handle logout (clear local state without API call)
-   * Made public so interceptor can call it to avoid infinite loops
+   * Clear auth state without redirecting (used internally)
    */
-  handleLogout(): void {
+  private clearAuthState(): void {
     // Clear token
     localStorage.removeItem('auth_token');
     sessionStorage.removeItem('currentUserId');
@@ -208,9 +218,20 @@ export class AuthService {
     
     // Update auth state
     this.isAuthenticatedSubject.next(false);
+  }
+
+  /**
+   * Handle logout (clear local state without API call)
+   * Made public so interceptor can call it to avoid infinite loops
+   */
+  handleLogout(): void {
+    this.clearAuthState();
     
-    // Redirect to login
-    this.router.navigate(['/login']);
+    // Only redirect if not already on login/register page
+    const currentUrl = this.router.url;
+    if (!currentUrl.includes('/login') && !currentUrl.includes('/register') && !currentUrl.includes('/signup')) {
+      this.router.navigate(['/login']);
+    }
   }
 
   /**
