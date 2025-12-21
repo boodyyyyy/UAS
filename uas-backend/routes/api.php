@@ -124,10 +124,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('student-fees')->group(function () {
         Route::get('/', [StudentFeeController::class, 'index']);
         
-        // Admin and accountant can create/update student fees
+        // All authenticated users can update status (students can only update their own)
+        Route::patch('/{id}/status', [StudentFeeController::class, 'updateStatus']);
+        
+        // Admin and accountant can create student fees
         Route::middleware('role:admin,accounting')->group(function () {
             Route::post('/', [StudentFeeController::class, 'store']);
-            Route::patch('/{id}/status', [StudentFeeController::class, 'updateStatus']);
         });
     });
 

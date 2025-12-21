@@ -51,12 +51,19 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(clonedRequest).pipe(
       catchError((error: HttpErrorResponse) => {
         // Handle 401 Unauthorized
-        // Skip handling if this is already a logout request to prevent infinite loop
-        if (error.status === 401 && !request.url.includes('/auth/logout')) {
+        // Skip handling if this is already a logout request or a public endpoint to prevent infinite loop
+        if (error.status === 401 && !request.url.includes('/auth/logout') && !isPublicEndpoint) {
           // Token expired or invalid - clear local state and redirect
           // Don't call logout API to avoid infinite loop
-          this.authService.handleLogout();
-          this.router.navigate(['/login']);
+          const currentUrl = this.router.url;
+          // Only redirect if not already on login/register page
+          if (!currentUrl.includes('/login') && !currentUrl.includes('/register') && !currentUrl.includes('/signup')) {
+            this.authService.handleLogout();
+            this.router.navigate(['/login']);
+          } else {
+            // Just clear auth state without redirecting
+            this.authService.handleLogout();
+          }
         }
 
         // Handle 403 Forbidden
