@@ -177,6 +177,7 @@
             <li><strong>State Management</strong>: RxJS Observables</li>
             <li><strong>Charts</strong>: Chart.js, ng2-charts</li>
             <li><strong>HTTP Client</strong>: Angular HttpClient with interceptors</li>
+            <li><strong>Session Recording</strong>: LogRocket for error tracking and user session replay</li>
         </ul>
 
         <h3>Backend</h3>
@@ -186,7 +187,7 @@
             <li><strong>Database</strong>: MySQL 5.7+</li>
             <li><strong>Authentication</strong>: Laravel Sanctum (Token-based)</li>
             <li><strong>API</strong>: RESTful API architecture</li>
-            <li><strong>Email</strong>: Laravel Mail (SMTP support)</li>
+            <li><strong>Email</strong>: Brevo (formerly Sendinblue) API for newsletter delivery</li>
         </ul>
 
         <h2>3.2 Architecture Pattern</h2>
@@ -259,9 +260,20 @@
         <h2>4.7 Newsletter Subscription</h2>
         <ul class="feature-list">
             <li>Email newsletter subscription in user profile</li>
-            <li>Automatic welcome email on subscription</li>
-            <li>SMTP email configuration support</li>
-            <li>Email template customization</li>
+            <li>Automatic welcome email on subscription via Brevo API</li>
+            <li>Professional email templates with Blade</li>
+            <li>Email delivery tracking and analytics</li>
+            <li>Brevo API integration for reliable email delivery</li>
+        </ul>
+
+        <h2>4.8 Session Recording & Error Tracking</h2>
+        <ul class="feature-list">
+            <li>LogRocket integration for user session replay</li>
+            <li>Automatic error capture and reporting</li>
+            <li>Console log recording</li>
+            <li>Network request monitoring (with sensitive data sanitization)</li>
+            <li>User behavior analytics</li>
+            <li>Performance monitoring</li>
         </ul>
     </div>
 
@@ -383,7 +395,8 @@
             <li>Database-backed invoice and payment management</li>
             <li>Admin user creation with password support</li>
             <li>Student username-based invoice creation</li>
-            <li>Newsletter subscription with email integration</li>
+            <li>Newsletter subscription with Brevo email integration</li>
+            <li>LogRocket integration for session recording and error tracking</li>
             <li>Server-side session support for drafts</li>
             <li>Updated test specifications</li>
         </ul>
@@ -407,7 +420,25 @@
             <li>Install Node.js 18+ and npm</li>
             <li>Run <code>npm install</code></li>
             <li>Configure environment file</li>
+            <li>Configure LogRocket app ID in <code>src/main.ts</code></li>
             <li>Start server: <code>npm start</code></li>
+        </ol>
+
+        <h2>9.3 Email Configuration (Brevo)</h2>
+        <ol>
+            <li>Sign up for a Brevo account at https://www.brevo.com</li>
+            <li>Generate an API key from Brevo dashboard</li>
+            <li>Add <code>BREVO_API_KEY</code> to backend <code>.env</code> file</li>
+            <li>Configure <code>MAIL_FROM_ADDRESS</code> and <code>MAIL_FROM_NAME</code></li>
+            <li>Run <code>php artisan config:clear</code></li>
+        </ol>
+
+        <h2>9.4 LogRocket Configuration</h2>
+        <ol>
+            <li>Sign up for a LogRocket account at https://logrocket.com</li>
+            <li>Create a new project and get your app ID</li>
+            <li>Update <code>src/main.ts</code> with your LogRocket app ID</li>
+            <li>LogRocket will automatically start recording sessions</li>
         </ol>
     </div>
 
@@ -440,7 +471,8 @@
                 <li>Secure authentication and authorization</li>
                 <li>Comprehensive financial management features</li>
                 <li>Role-based access control</li>
-                <li>Email integration</li>
+                <li>Brevo email integration for newsletters</li>
+                <li>LogRocket session recording and error tracking</li>
                 <li>Well-documented codebase</li>
                 <li>Production-ready code quality</li>
             </ul>
