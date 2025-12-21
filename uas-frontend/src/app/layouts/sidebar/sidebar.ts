@@ -75,8 +75,6 @@ export class Sidebar implements OnInit, OnDestroy {
     this.menuItems = this.allMenuItems.filter(item => {
       // If no roles specified, item is accessible to all
       if (!item.roles) return true;
-      // Admin can access everything
-      if (userRole === UserRole.ADMIN) return true;
       // Check if user role is in the allowed roles
       return item.roles.includes(userRole);
     });
