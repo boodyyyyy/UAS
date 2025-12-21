@@ -44,3 +44,6 @@ if (typeof window !== 'undefined') {
 
 bootstrapApplication(App, appConfig)
   .catch((err) => console.error(err));
+
+
+  
