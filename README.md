@@ -1,1 +1,0 @@
-UAS (Uinveristy Accounting System)

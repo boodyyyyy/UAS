@@ -1,0 +1,6 @@
+# This text file that tells search engine crawlers (bots) 
+# which parts of your website they can or cannot access.
+
+User-agent: *
+Disallow:
+

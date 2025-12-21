@@ -1,0 +1,7 @@
+# Ignore all Markdown files
+*.md
+**/*.md
+
+# Ignore all PDF files
+*.pdf
+**/*.pdf

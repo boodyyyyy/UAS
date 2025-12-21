@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AuthGuard } from './auth.guard';
+import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
 import { UserRole } from '../models/user.model';
 
@@ -24,18 +25,23 @@ describe('AuthGuard', () => {
 
   beforeEach(() => {
     // Create spies for dependencies
+    const authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
     userServiceSpy = jasmine.createSpyObj('UserService', ['getUser']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       providers: [
         AuthGuard,
+        { provide: AuthService, useValue: authServiceSpy },
         { provide: UserService, useValue: userServiceSpy },
         { provide: Router, useValue: routerSpy }
       ]
     });
 
     guard = TestBed.inject(AuthGuard);
+    // Set default authentication to true for most tests
+    const authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    authService.isAuthenticated.and.returnValue(true);
   });
 
   // ==================== GUARD CREATION ====================
