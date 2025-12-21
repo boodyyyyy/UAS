@@ -392,25 +392,7 @@ The University Accounting System successfully provides a comprehensive solution 
 
 ---
 
-## Appendix A: Demo Accounts
-
-After database seeding, the following accounts are available:
-
-- **Admin**
-  - Email: `admin@uas.edu`
-  - Password: `password`
-
-- **Accountant**
-  - Email: `accountant@uas.edu`
-  - Password: `password`
-
-- **Student**
-  - Email: `student@uas.edu`
-  - Password: `password`
-
----
-
-## Appendix B: Technology Versions
+## Technology Versions
 
 - Angular: 21.0.0
 - TypeScript: 5.9.x
@@ -423,4 +405,5 @@ After database seeding, the following accounts are available:
 
 **Report Generated:** December 2024  
 **Project Status:** ✅ Production Ready
+
 
