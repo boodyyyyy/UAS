@@ -1834,3 +1834,15 @@
 #18 D:\\Semester 5\\Electives\\Web Programming\\Angular Project\\Milestone 1\\UAS\\uas-backend\\artisan(14): Illuminate\\Foundation\\Console\\Kernel->handle()
 #19 {main}
 "} 
+[2025-12-18 00:36:35] local.INFO: Sending email via Brevo API {"to":"jojo35raed@gmail.com","from":"jojo35raed@gmail.com","subject":"Welcome to Our Newsletter!"} 
+[2025-12-18 00:36:35] local.INFO: Brevo API Response {"status":201,"body":"{\"messageId\":\"<202512180036.97070863635@smtp-relay.mailin.fr>\"}
+"} 
+[2025-12-18 00:36:35] local.INFO: Newsletter welcome email sent successfully via Brevo API {"email":"jojo35raed@gmail.com","message_id":"<202512180036.97070863635@smtp-relay.mailin.fr>"} 
+[2025-12-18 00:58:09] local.INFO: Sending email via Brevo API {"to":"jojo35raed@gmail.com","from":"jojo35raed@gmail.com","subject":"Welcome to Our Newsletter!"} 
+[2025-12-18 00:58:11] local.INFO: Brevo API Response {"status":201,"body":"{\"messageId\":\"<202512180058.78151257745@smtp-relay.mailin.fr>\"}
+"} 
+[2025-12-18 00:58:11] local.INFO: Newsletter welcome email sent successfully via Brevo API {"email":"jojo35raed@gmail.com","message_id":"<202512180058.78151257745@smtp-relay.mailin.fr>"} 
+[2025-12-21 00:01:46] local.INFO: Sending email via Brevo API {"to":"ymzhar60@gmail.com","from":"jojo35raed@gmail.com","subject":"Welcome to Our Newsletter!"} 
+[2025-12-21 00:01:49] local.INFO: Brevo API Response {"status":201,"body":"{\"messageId\":\"<202512210001.13852481747@smtp-relay.mailin.fr>\"}
+"} 
+[2025-12-21 00:01:49] local.INFO: Newsletter welcome email sent successfully via Brevo API {"email":"ymzhar60@gmail.com","message_id":"<202512210001.13852481747@smtp-relay.mailin.fr>"} 

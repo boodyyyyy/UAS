@@ -327,17 +327,36 @@ export class DataService {
   }
 
   updateStudentFeeStatus(id: string, status: 'pending' | 'paid' | 'overdue', paymentDate?: Date): Observable<StudentFee> {
-    const fees = this.storage.getLocalStorage<StudentFee[]>(this.STUDENT_FEES_KEY) || [];
-    const index = fees.findIndex(f => f.id === id);
-    if (index !== -1) {
-      fees[index].status = status;
-      if (paymentDate) {
-        fees[index].paymentDate = paymentDate;
-      }
-      this.storage.setLocalStorage(this.STUDENT_FEES_KEY, fees);
-      return of(fees[index]);
+    // Use API to update invoice status (student fees are stored as invoices in database)
+    const invoiceId = parseInt(id);
+    if (isNaN(invoiceId)) {
+      return throwError(() => new Error('Invalid student fee ID'));
     }
-    throw new Error('Student fee not found');
+
+    const paymentDateString = paymentDate ? paymentDate.toISOString().split('T')[0] : undefined;
+    
+    return this.apiService.updateStudentFeeStatus(invoiceId, status, paymentDateString).pipe(
+      map(response => {
+        // Transform API response to StudentFee format
+        // The API returns invoices with camelCase properties from InvoiceResource
+        const fee: any = response.data;
+        return {
+          id: fee.id?.toString() || fee.invoiceId || '',
+          studentId: fee.studentId?.toString() || '',
+          studentName: fee.studentName || '',
+          description: fee.description || '',
+          amount: fee.amount || 0,
+          dueDate: fee.dueDate ? new Date(fee.dueDate) : new Date(),
+          status: (fee.status || 'pending') as 'pending' | 'paid' | 'overdue',
+          paymentDate: fee.paymentDate ? new Date(fee.paymentDate) : undefined,
+          createdAt: fee.createdAt ? new Date(fee.createdAt) : new Date()
+        };
+      }),
+      catchError(error => {
+        console.error('Failed to update student fee status on server', error);
+        return throwError(() => error);
+      })
+    );
   }
 }
 

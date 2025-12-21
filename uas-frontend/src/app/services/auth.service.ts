@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { UserService, User as UserServiceUser } from './user.service';
 import { UserRole } from '../models/user.model';
+import { LogRocketService } from './logrocket.service';
 
 export interface LoginResponse {
   data: any;
@@ -33,7 +34,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private logRocketService: LogRocketService
   ) {
     // Check authentication status on service initialization
     this.checkAuthStatus();
@@ -115,7 +117,17 @@ export class AuthService {
     ).pipe(
       tap(response => {
         if (response.data) {
-          this.userService.setUser(this.mapApiUserToLocalUser(response.data));
+          const user = this.mapApiUserToLocalUser(response.data);
+          this.userService.setUser(user);
+          
+          // Identify user in LogRocket
+          this.logRocketService.identify(user.id, {
+            name: user.name,
+            email: user.email,
+            username: user.username,
+            role: user.role
+          });
+          
           this.isAuthenticatedSubject.next(true);
         }
       }),
@@ -164,6 +176,14 @@ export class AuthService {
     // Update user service
     this.userService.setUser(user);
     
+    // Identify user in LogRocket
+    this.logRocketService.identify(user.id, {
+      name: user.name,
+      email: user.email,
+      username: user.username,
+      role: user.role
+    });
+    
     // Update auth state
     this.isAuthenticatedSubject.next(true);
   }
@@ -179,6 +199,12 @@ export class AuthService {
     
     // Clear user from service
     this.userService.setUser(null as any);
+    
+    // Clear LogRocket user identification
+    // Note: LogRocket doesn't have a logout method, but identifying with null clears the session
+    if (this.logRocketService.isAvailable()) {
+      this.logRocketService.identify('anonymous', {});
+    }
     
     // Update auth state
     this.isAuthenticatedSubject.next(false);
