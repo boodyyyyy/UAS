@@ -172,12 +172,9 @@ This project is developed for educational purposes.
 
 This is a university project. For contributions, please contact the team members.
 
-## 📞 Support
-
-For issues or questions, please refer to the documentation files or contact the development team.
-
 ---
 
 **Version:** 1.0  
 **Last Updated:** December 2025
+
 
