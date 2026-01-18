@@ -7,6 +7,7 @@ A comprehensive web-based application for managing university financial operatio
 ### Prerequisites
 - PHP 8.1+ and Composer
 - Node.js 18+ and npm
+- Angular 21
 - MySQL 5.7+
 - Git
 
@@ -176,5 +177,6 @@ This is a university project. For contributions, please contact the team members
 
 **Version:** 1.0  
 **Last Updated:** December 2025
+
 
 
