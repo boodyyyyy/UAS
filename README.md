@@ -67,10 +67,10 @@ The application will be available at:
 
 **Team Name:** 404 Balance not found
 
-- Ahmed Megahed (13001265)
-- Hassan Islam (13001118)
-- Jana Raed (13002886)
-- Abdelrahman Saeed (13004425)
+- Ahmed Megahed 
+- Hassan Islam 
+- Jana Raed 
+- Abdelrahman Saeed 
 
 ## 📚 Documentation
 
